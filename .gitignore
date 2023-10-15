@@ -3,7 +3,6 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-!run/libs
 ### IntelliJ IDEA ###
 .idea/modules.xml
 .idea/jarRepositories.xml
@@ -39,3 +38,8 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+run/*
+!run/libs/
+!run/mods/
+.idea
+src/main/java/mrkto/mvoice/utils/other/docCreator.java
