@@ -1,0 +1,465 @@
+{
+  "classes": [
+    {
+      "name": "IScriptVoice",
+      "doc": "documentation on working with the Voice class \n\n <pre>{@code function main(c){ \n\n  var voice = mappet.getVoice() //or c.getVoice() \n\n }\n }</pre>",
+      "interfaces": [],
+      "methods": [
+        {
+          "name": "getGroup",
+          "doc": "This method returns a group with the specified name or if there is no such group then a null group \n\n\n <pre>{@code \n function main(c)\n {\n     var voice = mappet.getVoice()//or c.getVocie() \n\n     voice.createGroup(\"myGroup\")//creating group \n\n     voice.getGroup(\"myGroup\")//return group with name \"myGroup\" \n     voice.getGroup(\"nonCreatedGroup\")//return null group \n}\n }</pre>",
+          "returns": {
+            "type": "mrkto.mvoice.api.Voice.groups.Group"
+          },
+          "arguments": [
+            {
+              "name": "name",
+              "type": "java.lang.String"
+            }
+          ],
+          "annotations": []
+        },
+        {
+          "name": "createGroup",
+          "doc": "this method creates a group\n\n\n <pre>{@code \n function main(c)\n{\n    var voice = mappet.getVoice()//or c.getVocie()\n\n    voice.createGroup(\"myGroup\")//creating group \n } \n }</pre>\n",
+          "returns": {
+            "type": "boolean"
+          },
+          "arguments": [
+            {
+              "name": "name",
+              "type": "java.lang.String"
+            }
+          ],
+          "annotations": []
+        },
+        {
+          "name": "createGroupWithCustomData",
+          "doc": "creates a group with custom data\n\n\n <pre>{@code \n function main(c)\n{\n    var voice = mappet.getVoice()\n    c.send(mappet.createCompound(\"{foodCount:45}\"))\n    voice.createGroupWithCustomData(\"myGroupWithData\", mappet.createCompound(\"{foodCount:45}\"))\n } \n }</pre>\n",
+          "returns": {
+            "type": "boolean"
+          },
+          "arguments": [
+            {
+              "name": "name",
+              "type": "java.lang.String"
+            },
+            {
+              "name": "data",
+              "type": "net.minecraft.nbt.NBTTagCompound"
+            }
+          ],
+          "annotations": []
+        },
+        {
+          "name": "deleteGroup",
+          "doc": "checks whether the player is in any group\n\n\n <pre>{@code \n function main(c)\n{\n    var voice = mappet.getVoice()\n    \n    voice.createGroup(\"myGroup\")\n    \n    c.send(voice.getGroup(\"myGroup\").isNullGroup())\n    \n    voice.deleteGroup(\"myGroup\")\n    \n    c.send(voice.getGroup(\"myGroup\").isNullGroup())\n } \n }</pre>\n",
+          "returns": {
+            "type": "boolean"
+          },
+          "arguments": [
+            {
+              "name": "name",
+              "type": "java.lang.String"
+            }
+          ],
+          "annotations": []
+        },
+        {
+          "name": "getGroups",
+          "doc": "return array of groups\n\n\n <pre>{@code \n function main(c)\n{\n    var voice = mappet.getVoice()\n\n    var arr = voice.getGroups()//get array\n    for(var i in arr){\n        var group = arr[i]\n        c.send(group.getName())\n    }\n } \n }</pre>\n",
+          "returns": {
+            "type": "java.util.LinkedList"
+          },
+          "arguments": [],
+          "annotations": []
+        },
+
+        {
+          "name": "PlayerInGroup",
+          "doc": "checks whether the player is in any group\n\n\n <pre>{@code \n function main(c)\n{\n    var s = c.getSubject()\n    var voice = mappet.getVoice()\n    \n    voice.PlayerInGroup(s)\n } \n }</pre>\n",
+          "returns": {
+            "type": "boolean"
+          },
+          "arguments": [
+            {
+              "name": "player",
+              "type": "mchorse.mappet.api.scripts.code.entities.ScriptPlayer"
+            }
+          ],
+          "annotations": []
+        },
+        {
+          "name": "PlayerGroup",
+          "doc": "return player group\n\n\n <pre>{@code \n function main(c)\n{\n    var s = c.getSubject()\n    var voice = mappet.getVoice()\n    \n    voice.PlayerGroup(s)\n } \n }</pre>\n",
+          "returns": {
+            "type": "java.lang.String"
+          },
+          "arguments": [
+            {
+              "name": "player",
+              "type": "mchorse.mappet.api.scripts.code.entities.ScriptPlayer"
+            }
+          ],
+          "annotations": []
+        }
+      ]
+    },
+    {
+      "name": "IScriptGroup",
+      "doc": "documentation on working with the Voice class \n\n <pre>{@code function main(c){ \n\n  var voice = mappet.getVoice() //or c.getVoice() \n\n }\n }</pre>",
+      "interfaces": [],
+      "methods": [
+        {
+          "name": "getName",
+          "doc": "return group name\n\n\n <pre>{@code \n function main(c)\n{\n    var voice = mappet.getVoice()\n    \n    c.send(voice.getGroup(\"myGroup\").getName())\n } \n }</pre>\n",
+          "returns": {
+            "type": "java.lang.String"
+          },
+          "arguments": [
+
+          ],
+          "annotations": []
+        },
+        {
+          "name": "setName",
+          "doc": "set group name\n\n\n <pre>{@code \n function main(c)\n{\n    var voice = mappet.getVoice()\n    \n    voice.createGroup(\"myGroup\")\n    \n    var group = voice.getGroup(\"myGroup\")\n    group.setName(\"joke\")\n    c.send(group.getName())\n    \n } \n }</pre>\n",
+          "returns": {
+            "type": "void"
+          },
+          "arguments": [
+            {
+              "name": "name",
+              "type": "java.lang.String"
+            }
+          ],
+          "annotations": []
+        },
+        {
+          "name": "getData",
+          "doc": "return group name\n\n\n <pre>{@code \n function main(c)\n{\n    var voice = mappet.getVoice()\n    \n    c.send(voice.getGroup(\"myGroup\").getData())\n } \n }</pre>\n",
+          "returns": {
+            "type": "java.lang.String"
+          },
+          "arguments": [
+
+          ],
+          "annotations": []
+        },
+        {
+          "name": "setData",
+          "doc": "set group data\n\n\n <pre>{@code \n function main(c)\n{\n    var voice = mappet.getVoice()\n    \n    voice.createGroup(\"myGroup\")\n    \n    var group = voice.getGroup(\"myGroup\")\n    group.setData(mappet.createCompound(\"{food:\\\\\"i wont eat :(\\\\\"}\").getNBTTagCompound())\n    \n    c.send(group.getData())\n    \n } \n }</pre>\n",
+          "returns": {
+            "type": "void"
+          },
+          "arguments": [
+            {
+              "name": "data",
+              "type": "net.minecraft.nbt.NBTTagCompound"
+            }
+          ],
+          "annotations": []
+        },
+        {
+          "name": "getPlayerList",
+          "doc": "return group name\n\n\n <pre>{@code \n function main(c)\n{\n    var voice = mappet.getVoice()\n    \n    voice.createGroup(\"myGroup\")\n    \n    var group = voice.getGroup(\"myGroup\")\n    var playerList = group.getPlayerList()\n    var nameList = []\n    \n    for(var i in playerList){\n        nameList.push(playerList[i].getName())\n    }\n    c.send(nameList)\n    \n } \n }</pre>\n",
+          "returns": {
+            "type": "List"
+          },
+          "arguments": [
+          ],
+          "annotations": []
+        },
+        {
+          "name": "getMinecraftPlayerList",
+          "doc": "return group name\n\n\n <pre>{@code \n function main(c)\n{\n    var voice = mappet.getVoice()\n    \n    voice.createGroup(\"myGroup\")\n    \n    var group = voice.getGroup(\"myGroup\")\n    var playerList = group.getMinecraftPlayerList()\n    \n    c.send(playerList)\n    \n } \n }</pre>\n",
+          "returns": {
+            "type": "List"
+          },
+          "arguments": [
+          ],
+          "annotations": []
+        },
+        {
+          "name": "hasPlayer",
+          "doc": "",
+          "returns": {
+            "type": "boolean"
+          },
+          "arguments": [
+            {
+              "name": "player",
+              "type": "mchorse.mappet.api.scripts.code.entities.ScriptPlayer"
+            }
+          ],
+          "annotations": []
+        },
+        {
+          "name": "hasPlayer",
+          "doc": "",
+          "returns": {
+            "type": "boolean"
+          },
+          "arguments": [
+            {
+              "name": "player",
+              "type": "net.minecraft.entity.player.EntityPlayerMP"
+            }
+          ],
+          "annotations": []
+        },{
+          "name": "isEmpty",
+          "doc": "",
+          "returns": {
+            "type": "boolean"
+          },
+          "arguments": [
+          ],
+          "annotations": []
+        },{
+          "name": "setGlobal",
+          "doc": "",
+          "returns": {
+            "type": "void"
+          },
+          "arguments": [
+            {
+              "name": "value",
+              "type": "boolean"
+            }
+          ],
+          "annotations": []
+        },{
+          "name": "isGlobal",
+          "doc": "",
+          "returns": {
+            "type": "boolean"
+          },
+          "arguments": [
+          ],
+          "annotations": []
+        },{
+          "name": "setMuted",
+          "doc": "",
+          "returns": {
+            "type": "void"
+          },
+          "arguments": [
+            {
+              "name": "value",
+              "type": "boolean"
+            }
+          ],
+          "annotations": []
+        },{
+          "name": "isMuted",
+          "doc": "",
+          "returns": {
+            "type": "boolean"
+          },
+          "arguments": [
+          ],
+          "annotations": []
+        },
+        {
+          "name": "join",
+          "doc": "",
+          "returns": {
+            "type": "void"
+          },
+          "arguments": [
+            {
+              "name": "player",
+              "type": "net.minecraft.entity.player.EntityPlayerMP"
+            }
+          ],
+          "annotations": []
+        },
+        {
+          "name": "leave",
+          "doc": "",
+          "returns": {
+            "type": "void"
+          },
+          "arguments": [
+            {
+              "name": "player",
+              "type": "net.minecraft.entity.player.EntityPlayerMP"
+            }
+          ],
+          "annotations": []
+        },
+        {
+          "name": "join",
+          "doc": "",
+          "returns": {
+            "type": "void"
+          },
+          "arguments": [
+            {
+              "name": "player",
+              "type": "mchorse.mappet.api.scripts.code.entities.ScriptPlayer"
+            }
+          ],
+          "annotations": []
+        },
+        {
+          "name": "leave",
+          "doc": "",
+          "returns": {
+            "type": "void"
+          },
+          "arguments": [
+            {
+              "name": "player",
+              "type": "mchorse.mappet.api.scripts.code.entities.ScriptPlayer"
+            }
+          ],
+          "annotations": []
+        },
+        {
+          "name": "isNullGroup",
+          "doc": "",
+          "returns": {
+            "type": "boolean"
+          },
+          "arguments": [
+
+          ],
+          "annotations": []
+        }
+      ]
+    },
+    {
+      "name": "IScriptPlayer",
+
+      "doc": "",
+      "interfaces": [],
+      "methods": [
+        {
+          "name": "join",
+          "doc": "joins the group\n\n\n <pre>{@code \n function main(c)\n{\n    var s = c.getSubject()\n    \n    s.join(\"myGroup\")\n    \n } \n }</pre>\n",
+          "returns": {
+            "type": "void"
+          },
+          "arguments": [
+          ],
+          "annotations": []
+        },
+        {
+          "name": "leave",
+          "doc": "forces a player out of the group\n\n\n <pre>{@code \n function main(c)\n{\n    var s = c.getSubject()\n    \n    s.leave(\"myGroup\")\n    \n } \n }</pre>\n",
+          "returns": {
+            "type": "void"
+          },
+          "arguments": [
+          ],
+          "annotations": []
+        },
+        {
+          "name": "isMuted",
+          "doc": "checks to see if the player can speak\n\n\n <pre>{@code \n function main(c)\n{\n    var s = c.getSubject()\n    \n    c.send(s.isMuted())\n    \n } \n }</pre>\n",
+          "returns": {
+            "type": "boolean"
+          },
+          "arguments": [
+          ],
+          "annotations": []
+        },
+        {
+          "name": "isGroupMuted",
+          "doc": "checks to see if a player can speak in groups\n\n\n <pre>{@code \n function main(c)\n{\n    var s = c.getSubject()\n    \n    c.send(s.isGroupMuted())\n    \n } \n }</pre>\n",
+          "returns": {
+            "type": "boolean"
+          },
+          "arguments": [
+          ],
+          "annotations": []
+        },
+        {
+          "name": "Mute",
+          "doc": "mute the player\n\n\n <pre>{@code \n function main(c)\n{\n    var s = c.getSubject()\n    \n    s.Mute()\n    \n } \n }</pre>\n",
+          "returns": {
+            "type": "void"
+          },
+          "arguments": [
+          ],
+          "annotations": []
+        },
+        {
+          "name": "Unmute",
+          "doc": "unmute the player\n\n\n <pre>{@code \n function main(c)\n{\n    var s = c.getSubject()\n    \n    s.Unmute()\n    \n } \n }</pre>\n",
+          "returns": {
+            "type": "void"
+          },
+          "arguments": [
+          ],
+          "annotations": []
+        },
+        {
+          "name": "groupMute",
+          "doc": "mute the player in groups\n\n\n <pre>{@code \n function main(c)\n{\n    var s = c.getSubject()\n    \n    s.groupMute()\n    \n } \n }</pre>\n",
+          "returns": {
+            "type": "void"
+          },
+          "arguments": [
+          ],
+          "annotations": []
+        },
+        {
+          "name": "groupUnmute",
+          "doc": "unmute the player in groups\n\n\n <pre>{@code \n function main(c)\n{\n    var s = c.getSubject()\n    \n    s.groupUnmute()\n    \n } \n }</pre>\n",
+          "returns": {
+            "type": "void"
+          },
+          "arguments": [
+          ],
+          "annotations": []
+        },
+        {
+          "name": "isLocalMuted",
+          "doc": "unmute the player in groups\n\n\n <pre>{@code \n function main(c)\n{\n    var s = c.getSubject()\n    \n    c.send(s.isLocalMuted())\n    \n } \n }</pre>\n",
+          "returns": {
+            "type": "boolean"
+          },
+          "arguments": [
+            {
+              "name": "playerName",
+              "type": "java.lang.String"
+            }
+          ],
+          "annotations": []
+        },
+        {
+          "name": "LocalMute",
+          "doc": "unmute the player in groups\n\n\n <pre>{@code \n function main(c)\n{\n    var s = c.getSubject()\n    \n    c.send(s.LocalMute())\n    \n } \n }</pre>\n",
+          "returns": {
+            "type": "void"
+          },
+          "arguments": [
+            {
+              "name": "playerName",
+              "type": "java.lang.String"
+            }
+          ],
+          "annotations": []
+        },
+        {
+          "name": "LocalUnmute",
+          "doc": "unmute the player in groups\n\n\n <pre>{@code \n function main(c)\n{\n    var s = c.getSubject()\n    \n    c.send(s.LocalUnmute())\n    \n } \n }</pre>\n",
+          "returns": {
+            "type": "void"
+          },
+          "arguments": [
+            {
+              "name": "playerName",
+              "type": "java.lang.String"
+            }
+          ],
+          "annotations": []
+        }
+      ]
+    }
+  ],
+  "packages": []
+}

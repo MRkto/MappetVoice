@@ -1,0 +1,27 @@
+{
+  "RadioOn": {
+    "category": "player",
+    "sounds": [{
+      "name": "mvoice:on",
+      "volume": 0.3
+    }]
+  },
+  "RadioOff": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "mvoice:off",
+        "volume": 0.3
+      }
+    ]
+  },
+  "RadioSwitch": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "mvoice:switch",
+        "volume": 0.3
+      }
+    ]
+  }
+}

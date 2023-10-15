@@ -1,0 +1,22 @@
+# Config
+mvoice.config.title=Mappet Voice
+mvoice.config.button.settings=Открыть настройки
+mvoice.config.general.push=(не работает)
+mvoice.config.general.volumes=Громкость вывода
+mvoice.config.general.volumem=Громкость ввода
+mvoice.config.general.title==]
+mvoice.config.general.tooltip=вы были за текст-роллены
+mvoice.config.title.general.push=НЕ ТРОГАТЬ
+mvoice.config.title.general.volumes=0 - 200
+mvoice.config.title.general.volumem=0 - 200
+mvoice.config.comments.general.push=НЕ ТРОГАТЬ
+mvoice.config.comments.general.volumes=0 - 200
+mvoice.config.comments.general.volumem=0 - 200
+# settings
+mvoice.settings.micro=Микрофон
+mvoice.settings.speaker=Выводитель
+mvoice.settings.playerlist=Список игроков
+#other
+mvoice.send.muted=§6Вы заглушены оператором
+mvoice.keybinds.speak=Говорить
+mvoice.keybinds.other=Другое

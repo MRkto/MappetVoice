@@ -1,0 +1,24 @@
+# Config
+mvoice.config.title=Mappet Voice
+mvoice.config.button.settings=Open Settings
+mvoice.config.general.push=(not working)
+mvoice.config.general.volumes=Speaker Volume
+mvoice.config.general.volumem=Microphone Volume
+mvoice.config.general.title==]
+mvoice.config.general.tooltip=you have been text rolled
+mvoice.config.title.general.push=DON'T TOGGLE IT
+mvoice.config.title.general.volumes=0 - 200
+mvoice.config.title.general.volumem=0 - 200
+mvoice.config.comments.general.push=DON'T TOGGLE IT
+mvoice.config.comments.general.volumes=0 - 200
+mvoice.config.comments.general.volumem=0 - 200
+# settings
+mvoice.settings.micro=Microphone
+mvoice.settings.speaker=Speaker
+mvoice.settings.playerlist=Player List
+#other
+mvoice.send.muted=§6You muted by operator
+mvoice.keybinds.speak=Speak
+mvoice.keybinds.radio=radio
+mvoice.keybinds.other=Other
+item.radioItem.name=radio
