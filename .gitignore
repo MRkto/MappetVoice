@@ -38,6 +38,7 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
 run/*
 !run/libs/
 !run/mods/
