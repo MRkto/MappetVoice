@@ -27,7 +27,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class GuiPlayerSettings extends GuiBase {
-    HashMap<String, Double> data;
     public GuiPlayerSettings(){
         super();
         Minecraft mc = Minecraft.getMinecraft();
@@ -36,7 +35,6 @@ public class GuiPlayerSettings extends GuiBase {
         GuiLabel label = new GuiLabel(mc, IKey.lang("mvoice.settings.playerlist"));
         label.flex().h(10);
         element.add(label);
-        data = new HashMap<>();
         for(NetworkPlayerInfo networkplayerinfo : mc.getConnection().getPlayerInfoMap()){
             if(!networkplayerinfo.getGameProfile().getName().equals(mc.player.getName()))
                 element.add(new GuiPlayerElement(mc, networkplayerinfo.getGameProfile().getName(), PlayerUtils.getVolume(networkplayerinfo.getGameProfile().getName()), this::PlayerElement));
@@ -46,7 +44,9 @@ public class GuiPlayerSettings extends GuiBase {
     }
 
     private void PlayerElement(GuiPlayerElement e) {
-        data.put(e.name, e.volume.value);
+        ClientData data = ClientData.get();
+        data.getData().put(e.name, e.volume.value);
+        data.save();
     }
 
     @Override
@@ -56,11 +56,6 @@ public class GuiPlayerSettings extends GuiBase {
     @Override
     protected void closeScreen() {
         super.closeScreen();
-        ClientData cdata = FileUtils.getClientData();
-        for (Map.Entry<String, Double> entry : data.entrySet()) {
-            cdata.data.put(entry.getKey(), entry.getValue());
-        }
-        FileUtils.setClientData(cdata);
     }
 
     @Override

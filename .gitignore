@@ -41,5 +41,6 @@ bin/
 run/*
 !run/libs/
 !run/mods/
+build.properties
 .idea
 src/main/java/mrkto/mvoice/utils/other/docCreator.java

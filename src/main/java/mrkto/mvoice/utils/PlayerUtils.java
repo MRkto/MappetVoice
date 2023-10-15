@@ -32,23 +32,23 @@ import static mrkto.mvoice.utils.FileUtils.getClientData;
 public class PlayerUtils {
     @SideOnly(Side.CLIENT)
     public static void saveMicro(String name){
-        ClientData data = FileUtils.getClientData();
-        data.microName = name;
-        FileUtils.setClientData(data);
+        ClientData data = ClientData.get();
+        data.setMicroName(name);
+        data.save();
     }
     @SideOnly(Side.CLIENT)
     public static void saveSpeaker(String name){
-        ClientData data = FileUtils.getClientData();
-        data.speakerName = name;
-        FileUtils.setClientData(data);
+        ClientData data = ClientData.get();
+        data.setSpeakerName(name);
+        data.save();
     }
     @SideOnly(Side.CLIENT)
     public static String getMicro(){
-        return AudioUtils.findMixer(FileUtils.getClientData().microName, microReader.getFromat()).getMixerInfo().getName();
+        return AudioUtils.findMixer(ClientData.get().getMicroName(), microReader.getFromat()).getMixerInfo().getName();
     }
     @SideOnly(Side.CLIENT)
     public static String getSpeaker(){
-        return AudioUtils.findMixer(FileUtils.getClientData().speakerName, speakerWriter.getFromat()).getMixerInfo().getName();
+        return AudioUtils.findMixer(ClientData.get().getSpeakerName(), speakerWriter.getFromat()).getMixerInfo().getName();
     }
     public static String getSkinlink(EntityPlayerMP player){
         String json = readJsonFromUrl("http://skinsystem.ely.by/textures/" + player.getName());
@@ -66,9 +66,9 @@ public class PlayerUtils {
     }
     @SideOnly(Side.CLIENT)
     public static Double getVolume(String name){
-        ClientData data = getClientData();
-        if(data.data.containsKey(name))
-            return data.data.get(name);
+        ClientData data = ClientData.get();
+        if(data.getData().containsKey(name))
+            return data.getData().get(name);
         return 100d;
     }
 
