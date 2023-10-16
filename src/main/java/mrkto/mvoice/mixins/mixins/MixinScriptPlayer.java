@@ -23,19 +23,27 @@ public abstract class MixinScriptPlayer {
         return PLayersData.get().getPlayerData(getMinecraftPlayer()).isMuted();
     }
     public void mute(){
-        PLayersData.get().getPlayerData(getMinecraftPlayer()).setMuted(true);
+        PLayersData data = PLayersData.get();
+        data.getPlayerData(getMinecraftPlayer()).setMuted(true);
+        data.save();
     }
     public void unmute(){
-        PLayersData.get().getPlayerData(getMinecraftPlayer()).setMuted(false);
+        PLayersData data = PLayersData.get();
+        data.getPlayerData(getMinecraftPlayer()).setMuted(false);
+        data.save();
     }
     public boolean isLocalMuted(String name){
         return PLayersData.get().getPlayerData(getMinecraftPlayer()).getLocalMutedList().contains(name);
     }
     public void localMute(String name){
-        PLayersData.get().getPlayerData(getMinecraftPlayer()).getLocalMutedList().add(name);
+        PLayersData data = PLayersData.get();
+        data.getPlayerData(getMinecraftPlayer()).getLocalMutedList().add(name);
+        data.save();
     }
     public void localUnmute(String name){
-        PLayersData.get().getPlayerData(getMinecraftPlayer()).getLocalMutedList().remove(name);
+        PLayersData data = PLayersData.get();
+        data.getPlayerData(getMinecraftPlayer()).getLocalMutedList().remove(name);
+        data.save();
     }
     public boolean isSpeaking(){
         return EventHandler.list.get(getMinecraftPlayer().getName()) == 1;
