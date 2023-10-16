@@ -20,8 +20,9 @@ public class microReader {
 
 
     public static void startRecording(boolean isRadio) {
-        if(!isRecording)
-            try {
+        if(isRecording)
+            return;
+        try {
             AudioFormat format = AudioUtils.FORMATM;
             DataLine.Info info = MICRO_INFO;
             if(mixer == null){

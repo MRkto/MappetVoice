@@ -2,6 +2,7 @@ package mrkto.mvoice.utils.other;
 
 import mrkto.mvoice.audio.microphone.microReader;
 import mrkto.mvoice.client.gui.GuiPlayerSettings;
+import mrkto.mvoice.client.gui.GuiVoiceChange;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
@@ -38,8 +39,8 @@ public class KeyHandler {
     @SubscribeEvent
     public void inputUpdate(InputEvent.KeyInputEvent event){
         if(KeySpeak.isKeyDown() && !KeySpeakPressed && !KeyRadioPressed){
-            KeySpeakPressed = true;
-            microReader.startRecording(false);
+           KeySpeakPressed = true;
+           microReader.startRecording(false);
         }
         if(!KeySpeak.isKeyDown() && KeySpeakPressed && !KeyRadioPressed){
             KeySpeakPressed = false;
@@ -48,7 +49,7 @@ public class KeyHandler {
 
 
         if(KeyMute.isKeyDown() && !KeyMutePressed){
-            Minecraft.getMinecraft().displayGuiScreen(new GuiPlayerSettings());
+            Minecraft.getMinecraft().displayGuiScreen(new GuiVoiceChange());
             KeyMutePressed = true;
         }
         if(!KeyMute.isKeyDown() && KeyMutePressed){

@@ -22,20 +22,11 @@ public abstract class MixinScriptPlayer {
     public boolean isMuted(){
         return PLayersData.get().getPlayerData(getMinecraftPlayer()).isMuted();
     }
-    public boolean isGroupMuted(){
-        return PLayersData.get().getPlayerData(getMinecraftPlayer()).isGroupMuted();
-    }
     public void mute(){
         PLayersData.get().getPlayerData(getMinecraftPlayer()).setMuted(true);
     }
     public void unmute(){
         PLayersData.get().getPlayerData(getMinecraftPlayer()).setMuted(false);
-    }
-    public void groupMute(){
-        PLayersData.get().getPlayerData(getMinecraftPlayer()).setGroupMuted(true);
-    }
-    public void groupUnmute(){
-        PLayersData.get().getPlayerData(getMinecraftPlayer()).setGroupMuted(true);
     }
     public boolean isLocalMuted(String name){
         return PLayersData.get().getPlayerData(getMinecraftPlayer()).getLocalMutedList().contains(name);

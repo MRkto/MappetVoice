@@ -46,12 +46,6 @@ public class PlayerData {
     public void setMuted(boolean value) {
         isMuted = value;
     }
-    public boolean isGroupMuted() {
-        return isGroupMuted;
-    }
-    public void setGroupMuted(boolean value) {
-        isGroupMuted = value;
-    }
     public ArrayList<String> getLocalMutedList() {
         return localMutedList;
     }

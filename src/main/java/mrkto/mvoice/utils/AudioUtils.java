@@ -19,54 +19,52 @@ public class AudioUtils {
     public static OpusCodec codec = OpusCodec.newBuilder().withChannels(1).build();
 
 
-    public static Mixer findMixer(String name, Line.Info lineinfo){
+    public static Mixer findMixer(String name, Line.Info lineinfo) {
         Mixer.Info[] mixerInfos = AudioSystem.getMixerInfo();
-       Mixer omixer = null;
-       // Перебираем аудиоустройства и ищем микрофоны
-      for (Mixer.Info info : mixerInfos) {
+        Mixer omixer = null;
+        // Перебираем аудиоустройства и ищем микрофоны
+        for (Mixer.Info info : mixerInfos) {
             Mixer mixer = AudioSystem.getMixer(info);
             if (mixer.isLineSupported(lineinfo)) {
-                if(info.getName().equals(name)){
-                  return mixer;
+                if (info.getName().equals(name)) {
+                    return mixer;
                 }
-                if(omixer == null){
-                  omixer = mixer;
+                if (omixer == null) {
+                    omixer = mixer;
                 }
             }
-      }
+        }
         return omixer;
     }
-    public static ArrayList<String> findAudioDevices(Line.Info lineInfo)
-    {
+
+    public static ArrayList<String> findAudioDevices(Line.Info lineInfo) {
         final ArrayList<String> list = new ArrayList<>();
-        for (Mixer.Info mixerInfo : AudioSystem.getMixerInfo())
-        {
+        for (Mixer.Info mixerInfo : AudioSystem.getMixerInfo()) {
             final Mixer mixer = AudioSystem.getMixer(mixerInfo);
-            if (mixer.isLineSupported(lineInfo))
-            {
+            if (mixer.isLineSupported(lineInfo)) {
                 list.add(mixerInfo.getName());
             }
         }
         return list;
     }
-    public static boolean hasLinesOpen(Mixer mixer)
-    {
+
+    public static boolean hasLinesOpen(Mixer mixer) {
         return mixer.getSourceLines().length != 0 || mixer.getTargetLines().length != 0;
     }
-    public static byte[] encode(byte[] data){
+
+    public static byte[] encode(byte[] data) {
         return codec.encodeFrame(data);
     }
-    public static byte[] decode(byte[] data){
+
+    public static byte[] decode(byte[] data) {
         return codec.decodeFrame(data);
     }
-    public static boolean loadOpus()
-    {
-        try
-        {
+
+    public static boolean loadOpus() {
+        try {
             loadNatives();
             return true;
-        } catch (Throwable e)
-        {
+        } catch (Throwable e) {
             e.printStackTrace();
             return false;
         }
@@ -86,6 +84,7 @@ public class AudioUtils {
         OpusCodec.extractNatives(tempLibDir);
         OpusCodec.loadNative(tempLibDir);
     }
+
     private static boolean deleteDir(final File file) {
         final File[] contents = file.listFiles();
         if (contents != null) {
@@ -97,22 +96,26 @@ public class AudioUtils {
         }
         return file.delete();
     }
-    public static void setSpeaker(String name){
+
+    public static void setSpeaker(String name) {
         speakerWriter.setMixer(name);
         PlayerUtils.saveSpeaker(name);
     }
-    public static void setMicro(String name){
+
+    public static void setMicro(String name) {
         microReader.setMixer(name);
         PlayerUtils.saveMicro(name);
     }
-    public static void setConfig(){
+
+    public static void setConfig() {
         speakerWriter.setMixer(PlayerUtils.getSpeaker());
         microReader.setMixer(PlayerUtils.getMicro());
     }
-    public static byte[] getCountBytes(byte[] data, int count, int offset){
+
+    public static byte[] getCountBytes(byte[] data, int count, int offset) {
         int countC = count + offset;
         byte[] dataNeed = data;
-        while(dataNeed.length < countC){
+        while (dataNeed.length < countC) {
             dataNeed = ArrayUtils.addAll(dataNeed, data);
         }
 
@@ -129,7 +132,8 @@ public class AudioUtils {
         }
         return data2;
     }
-    public static byte[] mergeSounds(byte[] sound1, byte[] sound2, float volumeBalance){
+
+    public static byte[] mergeSounds(byte[] sound1, byte[] sound2, float volumeBalance) {
         int length = Math.min(sound1.length, sound2.length);
         byte[] result = new byte[length];
 
@@ -139,13 +143,46 @@ public class AudioUtils {
 
             float mixed = sample1 * volumeBalance + sample2 * (1.0f - volumeBalance);
 
-            // Обрезаем значение до диапазона [-1, 1]
+
             mixed = Math.max(-1.0f, Math.min(1.0f, mixed));
 
-            // Преобразуем обратно в байтовое значение
-            result[i] = (byte)(mixed * 128.0f);
+
+            result[i] = (byte) (mixed * 128.0f);
         }
 
         return result;
     }
+    private static float lastPeak = 0f;
+    public static float calcVolume(byte[] buf) {
+
+        float[] samples = new float[buf.length / 2];
+
+        int b = buf.length;
+
+        for (int i = 0, s = 0; i < b; ) {
+            int sample = 0;
+
+            sample |= buf[i++] & 0xFF;
+            sample |= buf[i++] << 8;
+
+            samples[s++] = sample / 32768f;
+        }
+
+        float peak = 0f;
+        for (float sample : samples) {
+
+            float abs = Math.abs(sample);
+            if (abs > peak) {
+                peak = abs;
+            }
+
+        }
+        if (lastPeak > peak) {
+                peak = lastPeak * 0.875f;
+        }
+
+        lastPeak = peak;
+        return lastPeak;
+    }
+
 }
