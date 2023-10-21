@@ -26,7 +26,7 @@ compileJava.options.encoding = 'UTF-8'
 
 version = project.version
 var dev = "dev"
-def propertyFile = file "build.properties"
+def propertyFile = file "buildNumber.properties"
 def props = new Properties()
 propertyFile.withReader { props.load(it) }
 String buildNum = props.build
@@ -101,7 +101,7 @@ dependencies {
     compileOnly files("run/libs/opus-jni-java-1.0.jar")
 
     implementation("net.minecraftforge:mergetool:0.2.3.3") { force = true }
-    implementation files("run/libs/opus-jni-java-1.0.jar")
+    implementation files("run/libs/opus-jni-java-1.0.jar") { force = true}
     implementation 'zone.rong:mixinbooter:7.1'
 
     String mixin = 'org.spongepowered:mixin:0.8.3'

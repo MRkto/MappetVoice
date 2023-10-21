@@ -34,7 +34,7 @@ public class ClientProxy extends CommonProxy{
         {
             MappetVoice.logger.error("Opus initialization failed. MappetVoice will not work.");
             MappetVoice.logger.error("Opus initialization error");
-            MappetVoice.logger.error("Try delete all mappetvoiceopus<number> files in " + System.getProperty("java.io.tmpdir") + " if this doesn't works your device is not support opus");
+            MappetVoice.logger.error("Try delete all mappetvoiceopus<number> files in " + System.getProperty("java.io.tmpdir") + " if this doesn't works your device is not support opus or other problems");
             FMLCommonHandler.instance().exitJava(0, true);
         }
         MinecraftForge.EVENT_BUS.register(new KeyHandler());
