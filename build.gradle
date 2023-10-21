@@ -4,12 +4,13 @@ buildscript {
         mavenCentral()
         gradlePluginPortal()
         maven { url = "https://repo.spongepowered.org/maven" }
+        maven { url = "https://jitpack.io/" }
         maven { url = 'https://maven.minecraftforge.net/' }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:5.1.73'
         classpath "org.apache.maven.plugins:maven-resources-plugin:3.2.0"
-        classpath 'gradle.plugin.com.github.johnrengelman:shadow:7.1.2'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.0'
         classpath "org.spongepowered:mixingradle:0.7-SNAPSHOT"
     }
 }
@@ -36,7 +37,7 @@ propertyFile.withWriter { props.store(it, null) }
 if (project.hasProperty("dev")) {
     version += "-" + dev
 }
-version += "-build" + buildNum
+version += "-$buildNum"
 mixin {
     disableAnnotationProcessorCheck()
 }
@@ -93,7 +94,6 @@ dependencies {
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
-
     compileOnly files("run/libs/blockbuster-${blockbuster}-${mcversion}-dev.jar")
     compileOnly files("run/libs/metamorph-${metamorph}-${mcversion}-dev.jar")
     compileOnly files("run/libs/mappet-${mappet}-${mcversion}-dev.jar")
@@ -101,7 +101,7 @@ dependencies {
     compileOnly files("run/libs/opus-jni-java-1.0.jar")
 
     implementation("net.minecraftforge:mergetool:0.2.3.3") { force = true }
-    implementation files("run/libs/opus-jni-java-1.0.jar") { force = true}
+    implementation files("run/libs/opus-jni-java-1.0.jar")
     implementation 'zone.rong:mixinbooter:7.1'
 
     String mixin = 'org.spongepowered:mixin:0.8.3'
@@ -141,7 +141,7 @@ jar {
         attributes([
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : project.version,
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
         ])
     }
 }
@@ -172,7 +172,22 @@ compileJava {
 }
 
 shadowJar {
+
+    relocate('net.labymod.opus', 'mrkto.mvoice.utils.opus')
+
+    append('mcmod.info')
+    append('pack.mcmeta')
+
+
     dependencies {
+        include(dependency(files("run/libs/opus-jni-java-1.0.jar")))
+    }
+    manifest {
+        attributes([
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : project.version,
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+        ])
     }
     archiveClassifier.set("")
 }

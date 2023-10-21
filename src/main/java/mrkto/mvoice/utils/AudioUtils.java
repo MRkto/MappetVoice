@@ -6,9 +6,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+
 import mrkto.mvoice.audio.microphone.microReader;
 import mrkto.mvoice.audio.speaker.speakerWriter;
-import net.labymod.opus.*;
+import net.labymod.opus.OpusCodec;
 import org.apache.commons.lang3.ArrayUtils;
 
 
@@ -16,8 +17,7 @@ import org.apache.commons.lang3.ArrayUtils;
 public class AudioUtils {
     public static final AudioFormat FORMATM = new AudioFormat(44100, 16, 1, true, false);
     public static final AudioFormat FORMATS = new AudioFormat(44100, 16, 2, true, false);
-    public static OpusCodec codec = OpusCodec.newBuilder().withChannels(1).build();
-
+    public static final OpusCodec codec = OpusCodec.newBuilder().withChannels(1).build();
 
     public static Mixer findMixer(String name, Line.Info lineinfo) {
         Mixer.Info[] mixerInfos = AudioSystem.getMixerInfo();
@@ -61,10 +61,12 @@ public class AudioUtils {
     }
 
     public static boolean loadOpus() {
-        try {
+        try
+        {
             loadNatives();
             return true;
-        } catch (Throwable e) {
+        } catch (Throwable e)
+        {
             e.printStackTrace();
             return false;
         }
@@ -77,7 +79,6 @@ public class AudioUtils {
         int index = 0;
         do {
             tempLibDir = new File(tmpDir, "mappetvoiceopus" + index);
-            System.out.println(tempLibDir);
             ++index;
         } while (tempLibDir.exists() && !deleteDir(tempLibDir));
         tempLibDir.mkdir();
