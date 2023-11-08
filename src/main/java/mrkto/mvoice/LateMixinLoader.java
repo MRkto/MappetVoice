@@ -1,7 +1,7 @@
 package mrkto.mvoice;
 
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
-import mrkto.mvoice.mixins.IModule;
 import zone.rong.mixinbooter.ILateMixinLoader;
 import mrkto.mvoice.mixins.Voice;
 import javax.annotation.Nullable;
@@ -42,6 +42,11 @@ public class LateMixinLoader implements IFMLLoadingPlugin, ILateMixinLoader
     public void injectData(Map<String, Object> data)
     {
 
+    }
+
+    @Override
+    public boolean shouldMixinConfigQueue(String mixinConfig) {
+        return !mixinConfig.equals("mixins.doc.json") || !Loader.isModLoaded("mappetextras");
     }
 
     @Override

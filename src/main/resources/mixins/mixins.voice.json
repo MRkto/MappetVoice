@@ -10,7 +10,6 @@
         "MixinFactory"
     ],
     "client": [
-        "docs.documentation"
     ],
     "server": [
 

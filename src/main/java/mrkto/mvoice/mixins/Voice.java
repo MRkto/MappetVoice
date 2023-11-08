@@ -1,5 +1,6 @@
 package mrkto.mvoice.mixins;
 
+import mrkto.mvoice.LateMixinLoader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -8,43 +9,43 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Voice implements IModule {
+public class Voice{
 
     private static Voice instance;
-    public static IModule getInstance() {
+    public static Voice getInstance() {
         if (Voice.instance == null) {
             Voice.instance = new Voice();
         }
         return Voice.instance;
     }
 
-    @Override
+
     public void preInit(FMLPreInitializationEvent event) {
-
-
+        event.getEventType();
 
     }
 
-    @Override
+
     public void init(FMLInitializationEvent event) {
 
 
 
     }
 
-    @Override
+
     public void postInit(FMLPostInitializationEvent event) {
 
 
 
     }
 
-    @Override
+
     public List<String> getMixinConfigs() {
         
 
         return new ArrayList<>(Arrays.asList(
-                "mixins/mixins.voice.json"
+                "mixins/mixins.voice.json",
+                "mixins/mixins.doc.json"
         ));
     }
 }

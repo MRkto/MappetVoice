@@ -1,17 +1,12 @@
 package mrkto.mvoice.audio.speaker;
 
-import com.ibm.icu.text.CharsetDetector;
 import mrkto.mvoice.MappetVoice;
 import mrkto.mvoice.utils.AudioUtils;
-import mrkto.mvoice.utils.PlayerUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.SoundCategory;
 
 import javax.sound.sampled.*;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,13 +37,15 @@ public class speakerWriter {
                 chanels.put(chanel, (SourceDataLine) mixer.getLine(info));
             }
             SourceDataLine DataLine = chanels.get(chanel);
-            byte[] stereoData = monoToStereo(data, leftVolume  * ((float) MappetVoice.volumes.get() / 100)  * (PlayerUtils.getVolume(chanel) / 100), rightVolume * ((float) MappetVoice.volumes.get() / 100) * (PlayerUtils.getVolume(chanel) / 100));
+            //monoToStereo(data, leftVolume  * ((float) MappetVoice.volumes.get() / 100)  * (PlayerUtils.getVolume(chanel) / 100), rightVolume * ((float) MappetVoice.volumes.get() / 100) * (PlayerUtils.getVolume(chanel) / 100));
+            byte[] stereoData = monoToStereo(data, 1, 1);
             DataLine.open(format);
             DataLine.start();
             DataLine.write(stereoData, 0, stereoData.length);
         } catch (LineUnavailableException e) {
             e.printStackTrace();
         } catch (NullPointerException e){
+            e.printStackTrace();
             MappetVoice.logger.error("DataLine == null (do not report unless the message is repeated frequently)");
         }
     }
@@ -153,8 +150,8 @@ public class speakerWriter {
                 }
             }else if(delList.contains(entry.getKey())){
                 delList.remove(entry.getKey());
-                }
             }
+        }
 
         for (Map.Entry<String, String> entry : toDel.entrySet()) {
             deleteChanel(entry.getKey());

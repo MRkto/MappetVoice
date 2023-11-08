@@ -8,6 +8,8 @@ import mrkto.mvoice.utils.PacketUtils;
 
 import javax.sound.sampled.*;
 
+import java.util.Random;
+
 import static java.lang.Thread.sleep;
 
 
@@ -53,6 +55,7 @@ public class microReader {
                             byte[] dataVolumed = speakerWriter.adjustVolume(data, (double) MappetVoice.volumem.get() / 100);
                             PacketUtils.clientSoundSender(dataVolumed, isRadio);
                         }
+                        data = null;
                         MappetVoice.NETWORK.sendToServer(new EventPacket("StopSpeak"));
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -101,4 +104,11 @@ public class microReader {
         return microphone.isOpen();
     }
     public static boolean IsRecording(){return isRecording;}
+
+    public static void main(String[] args) throws InterruptedException {
+        AudioUtils.loadOpus();
+        startRecording(false);
+        sleep(10000);
+        stopRecording();
+    }
 }

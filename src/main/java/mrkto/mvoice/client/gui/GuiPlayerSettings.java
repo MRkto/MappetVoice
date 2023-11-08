@@ -1,30 +1,13 @@
 package mrkto.mvoice.client.gui;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import mchorse.mclib.client.gui.framework.GuiBase;
 import mchorse.mclib.client.gui.framework.elements.*;
-import mchorse.mclib.client.gui.framework.elements.input.GuiTextElement;
 import mchorse.mclib.client.gui.framework.elements.utils.GuiLabel;
 import mchorse.mclib.client.gui.utils.keys.IKey;
-import mchorse.mclib.config.values.ValueString;
-import mrkto.mvoice.MappetVoice;
-import mchorse.metamorph.api.MorphManager;
-import mrkto.mvoice.api.Voice.client.ClientData;
-import mrkto.mvoice.utils.FileUtils;
+import mrkto.mvoice.api.Voice.data.ClientData;
 import mrkto.mvoice.utils.PlayerUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTException;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.nbt.JsonToNBT;
-
-import javax.sound.sampled.SourceDataLine;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
 
 public class GuiPlayerSettings extends GuiBase {
     public GuiPlayerSettings(){

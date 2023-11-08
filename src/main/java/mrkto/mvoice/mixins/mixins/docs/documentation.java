@@ -21,7 +21,7 @@ import java.util.Scanner;
 
 @Mixin(value = DocMerger.class, remap = false)
 public abstract class documentation {
-
+    private final boolean has = true;
     @Inject(
             method = "getMergedDocs",
             at = @At(

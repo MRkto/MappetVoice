@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "compatibilityLevel": "JAVA_8",
+  "package": "mrkto.mvoice.mixins.mixins",
+  "refmap": "mixins.mvoice.refmap.json",
+  "mixinPriority": 1000,
+  "mixins": [
+
+  ],
+  "client": [
+    "docs.documentation"
+  ],
+  "server": [
+
+  ]
+}

@@ -6,6 +6,7 @@ buildscript {
         maven { url = "https://repo.spongepowered.org/maven" }
         maven { url = "https://jitpack.io/" }
         maven { url = 'https://maven.minecraftforge.net/' }
+
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:5.1.73'
@@ -19,6 +20,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: "org.spongepowered.mixin"
 
+
 group = 'mrkto.mvoice'
 archivesBaseName = "MappetVoice"
 sourceCompatibility = targetCompatibility = "1.8"
@@ -27,6 +29,13 @@ compileJava.options.encoding = 'UTF-8'
 
 version = project.version
 var dev = "dev"
+
+
+
+
+
+//nenujnaya figna s kostilami
+
 def propertyFile = file "buildNumber.properties"
 def props = new Properties()
 propertyFile.withReader { props.load(it) }
@@ -38,15 +47,29 @@ if (project.hasProperty("dev")) {
     version += "-" + dev
 }
 version += "-$buildNum"
+
+
+
+
+
 mixin {
     disableAnnotationProcessorCheck()
 }
 
-def mixins = new StringJoiner(",")
-// Re-run genIntellijRuns if you add a new mixin
-new ArrayList<>(Arrays.asList(
+def mixins = new ArrayList<>(Arrays.asList(
+        "--tweakClass",
+        "org.spongepowered.asm.launch.MixinTweaker",
+))
+
+def mixinFiles = new ArrayList<>(Arrays.asList(
+        'mixins/mixins.doc.json',
         'mixins/mixins.voice.json'
-)).forEach { mixins.add(it)}
+))
+
+mixinFiles.forEach {
+    mixins.add("--mixin")
+    mixins.add(it)
+}
 
 minecraft {
 
@@ -98,11 +121,10 @@ dependencies {
     compileOnly files("run/libs/metamorph-${metamorph}-${mcversion}-dev.jar")
     compileOnly files("run/libs/mappet-${mappet}-${mcversion}-dev.jar")
     compileOnly files("run/libs/mclib-${mclib}-${mcversion}-dev.jar")
-    compileOnly files("run/libs/opus-jni-java-1.0.jar")
 
     implementation("net.minecraftforge:mergetool:0.2.3.3") { force = true }
-    implementation files("run/libs/opus-jni-java-1.0.jar")
     implementation 'zone.rong:mixinbooter:7.1'
+    implementation files("run/libs/opus-jni-java-1.0.3.jar")
 
     String mixin = 'org.spongepowered:mixin:0.8.3'
     implementation (mixin) {
@@ -148,7 +170,7 @@ jar {
 
 // Example configuration to allow publishing using the maven-publish task
 // This is the preferred method to reobfuscate your jar file
-//jar.finalizedBy('shadowJar')
+jar.finalizedBy('shadowJar')
 jar.finalizedBy('reobfJar')
 // However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
 //publish.dependsOn('reobfJar')
@@ -173,14 +195,13 @@ compileJava {
 
 shadowJar {
 
-    relocate('net.labymod.opus', 'mrkto.mvoice.utils.opus')
 
     append('mcmod.info')
     append('pack.mcmeta')
 
 
     dependencies {
-        include(dependency(files("run/libs/opus-jni-java-1.0.jar")))
+        include(dependency(files("run/libs/opus-jni-java-1.0.3.jar")))
     }
     manifest {
         attributes([
@@ -189,7 +210,6 @@ shadowJar {
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
         ])
     }
-    archiveClassifier.set("")
 }
 
 task prepareAssets(type: Copy) {

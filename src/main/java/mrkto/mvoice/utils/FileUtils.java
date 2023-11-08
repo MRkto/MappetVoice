@@ -3,8 +3,8 @@ package mrkto.mvoice.utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import mrkto.mvoice.MappetVoice;
-import mrkto.mvoice.api.Voice.client.ClientData;
-import mrkto.mvoice.api.Voice.data.PLayersData;
+import mrkto.mvoice.api.Voice.data.ClientData;
+import mrkto.mvoice.api.Voice.data.PlayersData;
 import mrkto.mvoice.audio.microphone.microReader;
 import mrkto.mvoice.audio.speaker.speakerWriter;
 import net.minecraftforge.common.DimensionManager;
@@ -14,7 +14,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Objects;
 
 public class FileUtils {
@@ -33,7 +32,7 @@ public class FileUtils {
             }
         }
         if (getPlayersData() == null){
-            setPlayersData(new PLayersData());
+            setPlayersData(new PlayersData());
         }
 
     }
@@ -62,15 +61,15 @@ public class FileUtils {
     private static Path voiceFolder() {
         return Objects.requireNonNull(DimensionManager.getCurrentSaveRootDirectory()).toPath().resolve("mappet").resolve("voice");
     }
-    public static PLayersData getPlayersData() {
+    public static PlayersData getPlayersData() {
         if(!Files.exists(getFilePath("PlayerData.json"))) {
             createDefaultWorld();
         }
         try (BufferedReader reader = Files.newBufferedReader(getFilePath("PlayerData.json"))) {
-            PLayersData data = gson.fromJson(reader, PLayersData.class);
+            PlayersData data = gson.fromJson(reader, PlayersData.class);
             if(data == null){
-                setPlayersData(new PLayersData());
-                data = gson.fromJson(reader, PLayersData.class);
+                setPlayersData(new PlayersData());
+                data = gson.fromJson(reader, PlayersData.class);
             }
             return data;
         }catch (IOException e) {
@@ -78,7 +77,7 @@ public class FileUtils {
         }
         
     }
-    public static void setPlayersData(PLayersData data) {
+    public static void setPlayersData(PlayersData data) {
         try (BufferedWriter writer = Files.newBufferedWriter(getFilePath("PlayerData.json"))) {
              gson.toJson(data, writer);
         }catch (IOException e) {

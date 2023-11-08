@@ -1,7 +1,6 @@
 package mrkto.mvoice.utils.other;
 
 import mrkto.mvoice.audio.microphone.microReader;
-import mrkto.mvoice.client.gui.GuiPlayerSettings;
 import mrkto.mvoice.client.gui.GuiVoiceChange;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
@@ -24,6 +23,8 @@ public class KeyHandler {
     private static boolean KeySpeakPressed = false;
     private static boolean KeyMutePressed = false;
     private static boolean KeyRadioPressed = false;
+    public static boolean canSpeak = true;
+    public static boolean canSpeakRadio = false;
 
     @SideOnly(Side.CLIENT)
     public static void register() {
@@ -33,7 +34,7 @@ public class KeyHandler {
     }
 
     /**
-     * Обработчик события нажатия клавиши в игре
+     * Обработчик события нажатия клавиш в игре
      */
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
@@ -57,7 +58,7 @@ public class KeyHandler {
         }
 
 
-        if(KeyRadio.isKeyDown() && !KeyRadioPressed && !KeySpeakPressed){
+        if(KeyRadio.isKeyDown() && !KeyRadioPressed && !KeySpeakPressed && canSpeakRadio){
             KeyRadioPressed = true;
             microReader.startRecording(true);
         }

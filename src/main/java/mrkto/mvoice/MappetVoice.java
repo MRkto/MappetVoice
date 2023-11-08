@@ -6,6 +6,8 @@ import mrkto.mvoice.api.Voice.VoiceManager;
 import mrkto.mvoice.audio.speaker.speakerWriter;
 import mrkto.mvoice.client.ValueVoiceButtons;
 import mrkto.mvoice.items.RadioItem;
+import mrkto.mvoice.utils.PacketUtils;
+import mrkto.mvoice.utils.other.OpusNotLoadedException;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -13,6 +15,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -80,7 +83,7 @@ public class MappetVoice {
     public static VoiceManager voice;
     public static MinecraftServer server;
     public static File config;
-    public static final Item radio = new RadioItem();
+    public static Item radio = new RadioItem();
 
     @SubscribeEvent
     public void onConfigRegister(RegisterConfigEvent event) {
@@ -125,10 +128,12 @@ public class MappetVoice {
 
     }
     @EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
+    public void preInit(FMLPreInitializationEvent event) throws OpusNotLoadedException {
         McLib.EVENT_BUS.register(this);
         logger = event.getModLog();
         config = event.getModConfigurationDirectory();
+        MinecraftForge.EVENT_BUS.register(new mrkto.mvoice.api.EventHandler());
+        PacketUtils.register();
         proxy.preInit(event);
     }
 
@@ -146,6 +151,7 @@ public class MappetVoice {
     public void serverStart(FMLServerStartingEvent event) {
         voice = new VoiceManager();
         server = event.getServer();
+        logger.info("hello world!");
     }
     @EventHandler
     public void serverStop(FMLServerStoppingEvent event){
@@ -156,6 +162,7 @@ public class MappetVoice {
     @EventHandler
     public void disableMod(FMLModDisabledEvent event){
         speakerWriter.deleteAllChanels();
+        logger.info("bye");
     }
     @SubscribeEvent
     public static void onRegistryItem(Register<Item> e){
@@ -168,7 +175,7 @@ public class MappetVoice {
     }
     @SideOnly(Side.CLIENT)
     private static void registryModel(Item item) {
-        final ResourceLocation regName = item.getRegistryName();// Не забываем, что getRegistryName может вернуть Null!
+        final ResourceLocation regName = item.getRegistryName();
         final ModelResourceLocation mrl = new ModelResourceLocation(regName != null ? regName : RLUtils.create(""), "inventory");
         ModelBakery.registerItemVariants(item, mrl);
         ModelLoader.setCustomModelResourceLocation(item, 0, mrl);

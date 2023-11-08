@@ -7,9 +7,9 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class PLayersData {
+public class PlayersData {
     private final ArrayList<PlayerData> data = new ArrayList<>();
-    public static PLayersData get(){
+    public static PlayersData get(){
         return FileUtils.getPlayersData();
     }
     public void createNew(UUID uuid){
@@ -22,35 +22,20 @@ public class PLayersData {
                 return playerdata;
             }
         }
-        this.data.add(new PlayerData(uuid));
-        return new PlayerData(uuid);
+        PlayerData PlayerData = new PlayerData(uuid);
+        this.data.add(PlayerData);
+        return PlayerData;
     }
     public PlayerData getPlayerData(String name){
-        EntityPlayerMP p = MappetVoice.server.getPlayerList().getPlayerByUsername(name);
-        UUID uuid = null;
-        if(p != null)
-            uuid = p.getUniqueID();
+        EntityPlayerMP uuid = MappetVoice.server.getPlayerList().getPlayerByUsername(name);
+        if(uuid != null)
+            return getPlayerData(uuid);
         else
-            return null;
-        ArrayList<PlayerData> data = this.data;
-        for (PlayerData playerdata : data) {
-            if (playerdata.getUUID().equals(uuid)) {
-                return playerdata;
-            }
-        }
-        this.data.add(new PlayerData(uuid));
-        return new PlayerData(uuid);
+            return new PlayerData(new UUID(123, 321));
     }
     public PlayerData getPlayerData(EntityPlayerMP player){
         UUID uuid = player.getUniqueID();
-        ArrayList<PlayerData> data = this.data;
-        for (PlayerData playerdata : data) {
-            if (playerdata.getUUID().equals(uuid)) {
-                return playerdata;
-            }
-        }
-        this.data.add(new PlayerData(uuid));
-        return new PlayerData(uuid);
+        return getPlayerData(uuid);
     }
     public void save(){
         FileUtils.setPlayersData(this);

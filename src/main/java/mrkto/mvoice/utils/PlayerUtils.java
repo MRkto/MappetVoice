@@ -3,16 +3,14 @@ package mrkto.mvoice.utils;
 
 import com.google.gson.Gson;
 import mrkto.mvoice.MappetVoice;
-import mrkto.mvoice.api.Voice.client.ClientData;
-import mrkto.mvoice.api.Voice.data.PLayersData;
-import mrkto.mvoice.api.Voice.data.PlayerData;
+import mrkto.mvoice.api.Voice.data.ClientData;
+import mrkto.mvoice.api.Voice.data.PlayersData;
 import mrkto.mvoice.audio.microphone.microReader;
 import mrkto.mvoice.audio.speaker.speakerWriter;
-import mrkto.mvoice.items.RadioItem;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagString;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -21,13 +19,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-
-import static mrkto.mvoice.MappetVoice.radio;
-import static mrkto.mvoice.utils.FileUtils.getClientData;
 
 public class PlayerUtils {
     @SideOnly(Side.CLIENT)
@@ -50,6 +44,50 @@ public class PlayerUtils {
     public static String getSpeaker(){
         return AudioUtils.findMixer(ClientData.get().getSpeakerName(), speakerWriter.getFromat()).getMixerInfo().getName();
     }
+    public static boolean setWave(EntityPlayerMP player, String wave){
+        PlayersData data = PlayersData.get();
+        data.getPlayerData(player).setWave(wave);
+        data.save();
+        if(!MappetVoice.radioItem.get()){
+            return true;
+        }
+        boolean set = false;
+        for(ItemStack item : player.inventory.mainInventory){
+            if(item.getItem().getRegistryName() == MappetVoice.radio.getRegistryName()){
+                NBTTagCompound tag = new NBTTagCompound();
+                tag.setString("wave", wave);
+                item.setTagCompound(tag);
+                set = true;
+            }
+        }
+        return set;
+    }
+    public static String getWave(EntityPlayerMP player){
+
+        if(!MappetVoice.radioItem.get()){
+            return PlayersData.get().getPlayerData(player).getWave();
+        }
+
+        ItemStack item = player.getHeldItemMainhand();
+        if(item.getItem().getRegistryName() == MappetVoice.radio.getRegistryName() && item.getTagCompound() != null && !item.getTagCompound().getString("wave").equals("")){
+            return item.getTagCompound().getString("wave");
+        }
+        item = player.getHeldItemOffhand();
+        if(item.getItem().getRegistryName() == MappetVoice.radio.getRegistryName() && item.getTagCompound() != null && !item.getTagCompound().getString("wave").equals("")){
+            return item.getTagCompound().getString("wave");
+        }
+
+        if(MappetVoice.needInArm.get()){
+            return null;
+        }
+
+        for(ItemStack Item : player.inventory.mainInventory){
+            if(Item.getItem().getRegistryName() == MappetVoice.radio.getRegistryName() && Item.getTagCompound() != null && !Item.getTagCompound().getString("wave").equals("")){
+                return Item.getTagCompound().getString("wave");
+            }
+        }
+        return null;
+    }
     public static String getSkinlink(EntityPlayerMP player){
         String json = readJsonFromUrl("http://skinsystem.ely.by/textures/" + player.getName());
         Gson gson = new Gson();
@@ -67,7 +105,7 @@ public class PlayerUtils {
     @SideOnly(Side.CLIENT)
     public static Double getVolume(String name){
         ClientData data = ClientData.get();
-        if(data.getData().containsKey(name))
+        if(data.getData() != null && data.getData().containsKey(name))
             return data.getData().get(name);
         return 100d;
     }

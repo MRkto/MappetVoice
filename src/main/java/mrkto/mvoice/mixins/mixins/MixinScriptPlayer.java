@@ -3,7 +3,8 @@ package mrkto.mvoice.mixins.mixins;
 import mchorse.mappet.api.scripts.code.entities.ScriptPlayer;
 import mrkto.mvoice.MappetVoice;
 import mrkto.mvoice.api.EventHandler;
-import mrkto.mvoice.api.Voice.data.PLayersData;
+import mrkto.mvoice.api.Voice.data.PlayersData;
+import mrkto.mvoice.network.common.MutePacket;
 import mrkto.mvoice.utils.PlayerUtils;
 import net.minecraft.entity.player.EntityPlayerMP;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,28 +21,30 @@ public abstract class MixinScriptPlayer {
         MappetVoice.voice.getGroup(group).leave(getMinecraftPlayer());
     }
     public boolean isMuted(){
-        return PLayersData.get().getPlayerData(getMinecraftPlayer()).isMuted();
+        return PlayersData.get().getPlayerData(getMinecraftPlayer()).isMuted();
     }
     public void mute(){
-        PLayersData data = PLayersData.get();
+        PlayersData data = PlayersData.get();
         data.getPlayerData(getMinecraftPlayer()).setMuted(true);
         data.save();
+        MappetVoice.NETWORK.sendTo(new MutePacket(false, false, 1), getMinecraftPlayer());
     }
     public void unmute(){
-        PLayersData data = PLayersData.get();
+        PlayersData data = PlayersData.get();
         data.getPlayerData(getMinecraftPlayer()).setMuted(false);
         data.save();
+        MappetVoice.NETWORK.sendTo(new MutePacket(true, false, 1), getMinecraftPlayer());
     }
     public boolean isLocalMuted(String name){
-        return PLayersData.get().getPlayerData(getMinecraftPlayer()).getLocalMutedList().contains(name);
+        return PlayersData.get().getPlayerData(getMinecraftPlayer()).getLocalMutedList().contains(name);
     }
     public void localMute(String name){
-        PLayersData data = PLayersData.get();
+        PlayersData data = PlayersData.get();
         data.getPlayerData(getMinecraftPlayer()).getLocalMutedList().add(name);
         data.save();
     }
     public void localUnmute(String name){
-        PLayersData data = PLayersData.get();
+        PlayersData data = PlayersData.get();
         data.getPlayerData(getMinecraftPlayer()).getLocalMutedList().remove(name);
         data.save();
     }
@@ -53,6 +56,12 @@ public abstract class MixinScriptPlayer {
     }
     public boolean isSilent(){
         return EventHandler.list.get(getMinecraftPlayer().getName()) == 0;
+    }
+    public boolean setWave(String wave){
+        return PlayerUtils.setWave(getMinecraftPlayer(), wave);
+    }
+    public String getWave(){
+        return PlayerUtils.getWave(getMinecraftPlayer());
     }
 
 }
