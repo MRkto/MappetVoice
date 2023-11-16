@@ -1,20 +1,18 @@
-package mrkto.mvoice.audio.microphone;
+package mrkto.mvoice.client.audio;
 
-import mrkto.mvoice.audio.speaker.speakerWriter;
 import mrkto.mvoice.network.common.EventPacket;
 import mrkto.mvoice.MappetVoice;
-import mrkto.mvoice.utils.AudioUtils;
+import mrkto.mvoice.client.AudioUtils;
 import mrkto.mvoice.utils.PacketUtils;
 
 import javax.sound.sampled.*;
 
-import java.util.Random;
-
 import static java.lang.Thread.sleep;
+import static mrkto.mvoice.client.audio.speakerWriter.SPEAKER_INFO;
 
 
 public class microReader {
-    private static final DataLine.Info MICRO_INFO = new DataLine.Info(TargetDataLine.class, AudioUtils.FORMATM);
+    public static final DataLine.Info MICRO_INFO = new DataLine.Info(TargetDataLine.class, AudioUtils.FORMATM);
     private static boolean isRecording = false;
     public static boolean isMuted = false;
     private static TargetDataLine microphone;
@@ -104,11 +102,44 @@ public class microReader {
         return microphone.isOpen();
     }
     public static boolean IsRecording(){return isRecording;}
+    //для ламы
+    public static void main(String[] args) throws LineUnavailableException {
+        Mixer.Info[] mixerInfos = AudioSystem.getMixerInfo();
+        Mixer omixer = null;
+        // Перебираем аудиоустройства и ищем микрофоны
+        for (Mixer.Info info : mixerInfos) {
+            Mixer mixer = AudioSystem.getMixer(info);
+            if (mixer.isLineSupported(MICRO_INFO)) {
+                omixer = mixer;
+                break;
+            }
+        }
 
-    public static void main(String[] args) throws InterruptedException {
-        AudioUtils.loadOpus();
-        startRecording(false);
-        sleep(10000);
-        stopRecording();
+
+
+        microphone = (TargetDataLine) omixer.getLine(MICRO_INFO); // получаем data line у миксера
+        microphone.open(AudioUtils.FORMATM); //FORMATS нужен для только для "реалистичного звука"
+        microphone.start(); // старутем? типо хз зачем насамом деле
+
+        byte[] data = new byte[1920000]; // ~20 секунд
+
+        microphone.read(data, 0, data.length);
+
+
+        Mixer omixerSpeaker = null;
+        // Перебираем аудиоустройства и ищем микрофоны
+        for (Mixer.Info info : mixerInfos) {
+            Mixer mixer = AudioSystem.getMixer(info);
+            if (mixer.isLineSupported(SPEAKER_INFO)) {
+                omixerSpeaker = mixer;
+                break;
+            }
+        }
+
+        SourceDataLine speaker = (SourceDataLine) omixerSpeaker.getLine(SPEAKER_INFO);
+        speaker.open(AudioUtils.FORMATM);
+        speaker.start();
+        speaker.write(data, 0, data.length);
+
     }
 }
