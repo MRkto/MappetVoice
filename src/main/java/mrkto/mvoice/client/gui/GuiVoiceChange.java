@@ -6,9 +6,11 @@ import mchorse.mclib.client.gui.framework.elements.buttons.GuiButtonElement;
 import mchorse.mclib.client.gui.framework.elements.list.GuiStringListElement;
 import mchorse.mclib.client.gui.framework.elements.utils.GuiLabel;
 import mchorse.mclib.client.gui.utils.keys.IKey;
-import mrkto.mvoice.audio.microphone.microReader;
-import mrkto.mvoice.audio.speaker.speakerWriter;
-import mrkto.mvoice.utils.AudioUtils;
+import mrkto.mvoice.MappetVoice;
+import mrkto.mvoice.client.ClientData;
+import mrkto.mvoice.client.audio.DefaultRecorder;
+import mrkto.mvoice.client.audio.DefaultSpeaker;
+import mrkto.mvoice.client.AudioUtils;
 import mrkto.mvoice.utils.PlayerUtils;
 import net.minecraft.client.Minecraft;
 
@@ -32,8 +34,8 @@ public class GuiVoiceChange extends GuiBase {
             lelement.flex().relative(this.viewport).xy(0.25F, 0.5F).w(0.3F).anchor(0.5F, 0.5F).column(5).vertical().stretch();
             relement.flex().relative(this.viewport).xy(0.75F, 0.5F).w(0.3F).anchor(0.5F, 0.5F).column(5).vertical().stretch();
 
-            ArrayList<String> mlist = AudioUtils.findAudioDevices(microReader.getFromat());
-            ArrayList<String> slist = AudioUtils.findAudioDevices(speakerWriter.getFromat());
+            ArrayList<String> mlist = AudioUtils.findAudioDevices(MappetVoice.AudioManager.getInput().getFormat());
+            ArrayList<String> slist = AudioUtils.findAudioDevices(MappetVoice.AudioManager.getOutput().getFromat());
 
             this.Speakerlist = new GuiStringListElement(mc, this::GuiSpeakerList);
             this.Speakerlist.background().setList(slist);
@@ -45,8 +47,8 @@ public class GuiVoiceChange extends GuiBase {
             this.Microlist.sort();
             this.Microlist.flex().relative(this.viewport).x(0.5F, -10).y(0.5F).w(50).h(100).anchor(1F, 0.5F);
             this.Microlist.setVisible(false);
-            this.MicroButton = new GuiButtonElement(mc, IKey.str(PlayerUtils.getMicro()), this::GuiMicroButton);
-            this.SpeakerButton = new GuiButtonElement(mc, IKey.str(PlayerUtils.getSpeaker()), this::GuiSpeakerButton);
+            this.MicroButton = new GuiButtonElement(mc, IKey.str(MappetVoice.AudioManager.getInput().getMixer()), this::GuiMicroButton);
+            this.SpeakerButton = new GuiButtonElement(mc, IKey.str(MappetVoice.AudioManager.getOutput().getMixer()), this::GuiSpeakerButton);
             GuiLabel rguiLabel = new GuiLabel(mc, IKey.lang("mvoice.settings.speaker"));
             GuiLabel lguiLabel = new GuiLabel(mc, IKey.lang("mvoice.settings.micro"));
             rguiLabel.flex().h(10);
@@ -70,12 +72,14 @@ public class GuiVoiceChange extends GuiBase {
 
         private void GuiSpeakerList(List<String> strings) {
             this.SpeakerButton.label = IKey.str(this.Speakerlist.getList().get(this.Speakerlist.getIndex()));
-            AudioUtils.setSpeaker(this.SpeakerButton.label.get());
+            MappetVoice.AudioManager.getOutput().setMixer(this.SpeakerButton.label.get());
+            ClientData.getInstance().setSpeakerName(this.SpeakerButton.label.get());
             this.Speakerlist.setVisible(false);
         }
         private void GuiMicroList(List<String> strings) {
             this.MicroButton.label = IKey.str(this.Microlist.getList().get(this.Microlist.getIndex()));
-            AudioUtils.setMicro(this.MicroButton.label.get());
+            MappetVoice.AudioManager.getInput().setMixer(this.MicroButton.label.get());
+            ClientData.getInstance().setMicroName(this.MicroButton.label.get());
             this.Microlist.setVisible(false);
         }
 

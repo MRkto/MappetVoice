@@ -1,16 +1,21 @@
 package mrkto.mvoice.utils;
 
-
 import com.google.gson.Gson;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import mrkto.mvoice.MappetVoice;
-import mrkto.mvoice.api.Voice.data.ClientData;
-import mrkto.mvoice.api.Voice.data.PlayersData;
-import mrkto.mvoice.audio.microphone.microReader;
-import mrkto.mvoice.audio.speaker.speakerWriter;
+import mrkto.mvoice.capability.Profile;
+import mrkto.mvoice.client.ClientData;
+import mrkto.mvoice.client.gui.VoiceMclibPanel.GuiPlayerListElement;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.network.NetworkPlayerInfo;
+import net.minecraft.client.resources.DefaultPlayerSkin;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntitySkull;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -22,32 +27,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class PlayerUtils {
-    @SideOnly(Side.CLIENT)
-    public static void saveMicro(String name){
-        ClientData data = ClientData.get();
-        data.setMicroName(name);
-        data.save();
-    }
-    @SideOnly(Side.CLIENT)
-    public static void saveSpeaker(String name){
-        ClientData data = ClientData.get();
-        data.setSpeakerName(name);
-        data.save();
-    }
-    @SideOnly(Side.CLIENT)
-    public static String getMicro(){
-        return AudioUtils.findMixer(ClientData.get().getMicroName(), microReader.getFromat()).getMixerInfo().getName();
-    }
-    @SideOnly(Side.CLIENT)
-    public static String getSpeaker(){
-        return AudioUtils.findMixer(ClientData.get().getSpeakerName(), speakerWriter.getFromat()).getMixerInfo().getName();
-    }
     public static boolean setWave(EntityPlayerMP player, String wave){
-        PlayersData data = PlayersData.get();
-        data.getPlayerData(player).setWave(wave);
-        data.save();
+        Profile.get(player).setWave(wave);
         if(!MappetVoice.radioItem.get()){
             return true;
         }
@@ -62,10 +48,10 @@ public class PlayerUtils {
         }
         return set;
     }
-    public static String getWave(EntityPlayerMP player){
+    public static String getWave(EntityPlayer player){
 
         if(!MappetVoice.radioItem.get()){
-            return PlayersData.get().getPlayerData(player).getWave();
+            return Profile.get(player).getWave();
         }
 
         ItemStack item = player.getHeldItemMainhand();
@@ -88,28 +74,33 @@ public class PlayerUtils {
         }
         return null;
     }
-    public static String getSkinlink(EntityPlayerMP player){
-        String json = readJsonFromUrl("http://skinsystem.ely.by/textures/" + player.getName());
-        Gson gson = new Gson();
-        if (json != null) {
-            objectUrl1 objectUrl = gson.fromJson(json, objectUrl1.class);
-            return objectUrl.SKIN.url;
-        } else {
-            json = readJsonFromUrl("https://auth.tlauncher.org/skin/profile/texture/login/" + player.getName());
-            objectUrl1 objectUrl = gson.fromJson(json, objectUrl1.class);
-            return objectUrl.SKIN.url;
+    public static void getSkinlink(String player){
+        new Thread(() -> {
 
+            String json = readJsonFromUrl("http://skinsystem.ely.by/textures/" + player);
+            Gson gson = new Gson();
+            if (json != null) {
+                objectUrl1 objectUrl = gson.fromJson(json, objectUrl1.class);
+                GuiPlayerListElement.skins.put(player, objectUrl.SKIN.url);
+            } else {
+                json = readJsonFromUrl("https://auth.tlauncher.org/skin/profile/texture/login/" + player);
+                objectUrl1 objectUrl = gson.fromJson(json, objectUrl1.class);
+                GuiPlayerListElement.skins.put(player, objectUrl.SKIN.url);
+
+            }
+            GameProfile profile = null;
+
+            for(NetworkPlayerInfo networkplayerinfo : Minecraft.getMinecraft().getConnection().getPlayerInfoMap()){
+                if(!networkplayerinfo.getGameProfile().getName().equals(player))
+                    continue;
+                profile = networkplayerinfo.getGameProfile();
+            }
+            if(profile != null){
+                GuiPlayerListElement.skins.put(player, getSkin(profile));
+            }
         }
-
+        ).start();
     }
-    @SideOnly(Side.CLIENT)
-    public static Double getVolume(String name){
-        ClientData data = ClientData.get();
-        if(data.getData() != null && data.getData().containsKey(name))
-            return data.getData().get(name);
-        return 100d;
-    }
-
     public static String readJsonFromUrl(String url) {
         URLConnection connection;
         InputStream is = null;
@@ -140,15 +131,23 @@ public class PlayerUtils {
             }
         }
     }
+    public static String getSkin(GameProfile profile) {
+        Minecraft minecraft = Minecraft.getMinecraft();
+        Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = minecraft.getSkinManager().loadSkinFromCache(profile);
+
+        if (map.containsKey(MinecraftProfileTexture.Type.SKIN)) {
+            return minecraft.getSkinManager().loadSkin(map.get(MinecraftProfileTexture.Type.SKIN), MinecraftProfileTexture.Type.SKIN).toString();
+        }
+        return "minecraft:textures/entity/steve.png";
+    }
 
 
-    class objectUrl1 {
+    static class objectUrl1 {
         public objectSkin SKIN;
-        class objectSkin {
+        static class objectSkin {
             public String url;
         }
     }
-
 }
 
 

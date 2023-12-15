@@ -3,11 +3,16 @@ package mrkto.mvoice;
 import mchorse.mclib.config.values.ValueFloat;
 import mchorse.mclib.utils.resources.RLUtils;
 import mrkto.mvoice.api.Voice.VoiceManager;
-import mrkto.mvoice.audio.speaker.speakerWriter;
-import mrkto.mvoice.client.ValueVoiceButtons;
+import mrkto.mvoice.capability.IProfile;
+import mrkto.mvoice.capability.Profile;
+import mrkto.mvoice.capability.ProfileStorage;
+import mrkto.mvoice.utils.other.mclib.ValueVoiceButtons;
+import mrkto.mvoice.client.audio.interfaces.IAudioSystemManager;
 import mrkto.mvoice.items.RadioItem;
-import mrkto.mvoice.utils.PacketUtils;
+import mrkto.mvoice.network.Dispatcher;
+import mrkto.mvoice.proxy.ServerProxy;
 import mrkto.mvoice.utils.other.OpusNotLoadedException;
+import mrkto.mvoice.utils.other.mclib.MVIcons;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -16,6 +21,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -28,15 +34,12 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLModDisabledEvent;
 import net.minecraftforge.fml.common.SidedProxy;
 
-import mrkto.mvoice.proxy.CommonProxy;
-
 import mchorse.mclib.McLib;
 import mchorse.mclib.config.ConfigBuilder;
 import mchorse.mclib.events.RegisterConfigEvent;
 import mchorse.mclib.config.values.ValueInt;
 import mchorse.mclib.config.values.ValueBoolean;
 
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
@@ -54,18 +57,23 @@ public class MappetVoice {
     public static final String NAME = "MappetVoice";
     public static final String VERSION = "0.0.1";
     @SidedProxy(serverSide = "mrkto.mvoice.proxy.ServerProxy", clientSide = "mrkto.mvoice.proxy.ClientProxy")
-    public static CommonProxy proxy;
-
-    public static final SimpleNetworkWrapper NETWORK = new SimpleNetworkWrapper(MOD_ID);
-
+    public static ServerProxy proxy;
     @Mod.Instance(MOD_ID)
     public static MappetVoice INSTANCE;
+    public static Logger logger;
+    public static VoiceManager voice;
+    public static MinecraftServer server;
+    public static File config;
+    public static Item radio = new RadioItem();
+    @SideOnly(Side.CLIENT)
+    public static IAudioSystemManager AudioManager;
     //configuration
     public static ValueBoolean push;
-
+    public static ValueBoolean opus;
     public static ValueInt volumes;
     public static ValueInt volumem;
     public static ValueFloat fadetime;
+    public static ValueFloat numofaction;
     public static ValueInt range;
     public static ValueBoolean radioItem;
     public static ValueBoolean hearOther;
@@ -79,16 +87,13 @@ public class MappetVoice {
     public static ValueInt maxNoise;
     public static ValueInt minNoise;
     public static ValueInt NoiseRange;
-    public static Logger logger;
-    public static VoiceManager voice;
-    public static MinecraftServer server;
-    public static File config;
-    public static Item radio = new RadioItem();
+    public static ValueBoolean voiceaction;
 
     @SubscribeEvent
     public void onConfigRegister(RegisterConfigEvent event) {
         range = event.opAccess.category("Voice settings").getInt("hearrange", 25, 1, 200);
         range.syncable();
+        opus = event.opAccess.category("Voice settings").getBoolean("calcSoundOnServer", false);
         ConfigBuilder builder = event.createBuilder(MOD_ID);
 
         builder.category("general").register(new ValueVoiceButtons("buttons").clientSide()).getCategory();
@@ -100,6 +105,10 @@ public class MappetVoice {
         volumem.clientSide();
         fadetime = builder.getFloat("fadetime", 0.1f, 0.01f, 2);
         fadetime.clientSide();
+        voiceaction = builder.getBoolean("voiceAction", false);
+        voiceaction.clientSide();
+        numofaction = builder.getFloat("numofaction", 0.3f, 0.0f, 1.0f);
+        numofaction.clientSide();
         builder.category("radios");
         onRadioSound = builder.getBoolean("onRadioSound", true);
         onRadioSound.syncable();
@@ -129,16 +138,21 @@ public class MappetVoice {
     }
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) throws OpusNotLoadedException {
-        McLib.EVENT_BUS.register(this);
         logger = event.getModLog();
         config = event.getModConfigurationDirectory();
-        MinecraftForge.EVENT_BUS.register(new mrkto.mvoice.api.EventHandler());
-        PacketUtils.register();
+
+        McLib.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new mrkto.mvoice.EventHandler());
+        Dispatcher.register();
+        CapabilityManager.INSTANCE.register(IProfile.class, new ProfileStorage(), Profile::new);
+
         proxy.preInit(event);
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
+        MVIcons.register();
+
         proxy.init(event);
     }
 
@@ -152,16 +166,23 @@ public class MappetVoice {
         voice = new VoiceManager();
         server = event.getServer();
         logger.info("hello world!");
+
+
     }
+
+
     @EventHandler
     public void serverStop(FMLServerStoppingEvent event){
         voice = null;
         server = null;
         logger.info("gg");
+
+
     }
+    @SideOnly(Side.CLIENT)
     @EventHandler
     public void disableMod(FMLModDisabledEvent event){
-        speakerWriter.deleteAllChanels();
+        AudioManager.fullTerminate();
         logger.info("bye");
     }
     @SubscribeEvent
@@ -179,5 +200,6 @@ public class MappetVoice {
         final ModelResourceLocation mrl = new ModelResourceLocation(regName != null ? regName : RLUtils.create(""), "inventory");
         ModelBakery.registerItemVariants(item, mrl);
         ModelLoader.setCustomModelResourceLocation(item, 0, mrl);
+
     }
 }

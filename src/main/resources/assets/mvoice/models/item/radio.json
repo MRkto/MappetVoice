@@ -1,0 +1,6 @@
+{
+  "parent": "mvoice:radiom",
+  "textures": {
+    "0": "mvoice:item/radio"
+  }
+}

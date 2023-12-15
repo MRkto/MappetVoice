@@ -3,20 +3,20 @@ package mrkto.mvoice;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import zone.rong.mixinbooter.ILateMixinLoader;
-import mrkto.mvoice.mixins.Voice;
+
 import javax.annotation.Nullable;
-import net.minecraft.nbt.JsonToNBT;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+
+import java.util.*;
 
 public class LateMixinLoader implements IFMLLoadingPlugin, ILateMixinLoader
 {
     @Override
     public List<String> getMixinConfigs()
     {
-        return Voice.getInstance().getMixinConfigs();
+        return new ArrayList<>(Arrays.asList(
+            "mixins/mixins.voice.json",
+            "mixins/mixins.doc.json"
+    ));
     }
 
     @Override
@@ -46,7 +46,7 @@ public class LateMixinLoader implements IFMLLoadingPlugin, ILateMixinLoader
 
     @Override
     public boolean shouldMixinConfigQueue(String mixinConfig) {
-        return !mixinConfig.equals("mixins.doc.json") || !Loader.isModLoaded("mappetextras");
+        return !mixinConfig.equals("mixins/mixins.doc.json") || !Loader.isModLoaded("mappetextras");
     }
 
     @Override

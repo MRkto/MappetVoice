@@ -6,7 +6,6 @@ public class OpusNotLoadedException extends Exception{
         super();
     }
     public OpusNotLoadedException(String message) {
-
         super(message);
     }
 }

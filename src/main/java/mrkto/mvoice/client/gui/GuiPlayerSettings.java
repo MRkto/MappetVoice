@@ -4,7 +4,7 @@ import mchorse.mclib.client.gui.framework.GuiBase;
 import mchorse.mclib.client.gui.framework.elements.*;
 import mchorse.mclib.client.gui.framework.elements.utils.GuiLabel;
 import mchorse.mclib.client.gui.utils.keys.IKey;
-import mrkto.mvoice.api.Voice.data.ClientData;
+import mrkto.mvoice.client.ClientData;
 import mrkto.mvoice.utils.PlayerUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
@@ -20,14 +20,14 @@ public class GuiPlayerSettings extends GuiBase {
         element.add(label);
         for(NetworkPlayerInfo networkplayerinfo : mc.getConnection().getPlayerInfoMap()){
             if(!networkplayerinfo.getGameProfile().getName().equals(mc.player.getName()))
-                element.add(new GuiPlayerElement(mc, networkplayerinfo.getGameProfile().getName(), PlayerUtils.getVolume(networkplayerinfo.getGameProfile().getName()), this::PlayerElement));
+                element.add(new GuiPlayerElement(mc, networkplayerinfo.getGameProfile().getName(), ClientData.getInstance().getVolume(networkplayerinfo.getGameProfile().getName()), this::PlayerElement));
         }
         this.root.add(element);
 
     }
 
     private void PlayerElement(GuiPlayerElement e) {
-        ClientData data = ClientData.get();
+        ClientData data = ClientData.getInstance();
         data.getData().put(e.name, e.volume.value);
         data.save();
     }

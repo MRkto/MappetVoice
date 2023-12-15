@@ -30,10 +30,6 @@ compileJava.options.encoding = 'UTF-8'
 version = project.version
 var dev = "dev"
 
-
-
-
-
 //nenujnaya figna s kostilami
 
 def propertyFile = file "buildNumber.properties"
@@ -48,10 +44,6 @@ if (project.hasProperty("dev")) {
 }
 version += "-$buildNum"
 
-
-
-
-
 mixin {
     disableAnnotationProcessorCheck()
 }
@@ -62,8 +54,8 @@ def mixins = new ArrayList<>(Arrays.asList(
 ))
 
 def mixinFiles = new ArrayList<>(Arrays.asList(
-        'mixins/mixins.doc.json',
-        'mixins/mixins.voice.json'
+        'mvoice/mvoice.doc.json',
+        'mvoice/mvoice.voice.json'
 ))
 
 mixinFiles.forEach {
@@ -75,12 +67,6 @@ minecraft {
 
     mappings channel: 'snapshot', version: '20171003-1.12'
 
-    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
-
-    //accessTransformer = file('src/main/resources/META-INF/mappet_at.cfg')
-
-    // Default run configurations.
-    // These can be tweaked, removed, or duplicated as needed.
     runs {
         client {
             workingDirectory project.file('run')
@@ -113,17 +99,16 @@ repositories {
 }
 
 dependencies {
-    // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
-    // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
-    // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
     compileOnly files("run/libs/blockbuster-${blockbuster}-${mcversion}-dev.jar")
     compileOnly files("run/libs/metamorph-${metamorph}-${mcversion}-dev.jar")
     compileOnly files("run/libs/mappet-${mappet}-${mcversion}-dev.jar")
     compileOnly files("run/libs/mclib-${mclib}-${mcversion}-dev.jar")
+    compileOnly files("libs/udt-java-0.5-SNAPSHOT.jar")
 
     implementation("net.minecraftforge:mergetool:0.2.3.3") { force = true }
     implementation 'zone.rong:mixinbooter:7.1'
+    implementation files("libs/dt-java-0.5-SNAPSHOT.jar")
     implementation files("run/libs/opus-jni-java-1.0.3.jar")
 
     String mixin = 'org.spongepowered:mixin:0.8.3'
@@ -136,28 +121,8 @@ dependencies {
     annotationProcessor (mixin) {
         transitive = false
     }
-
-    // You may put jars on which you depend on in ./libs or you may define them like so..
-    // compile "some.group:artifact:version:classifier"
-    // compile "some.group:artifact:version"
-
-    // Real examples
-    // compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
-    // compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
-
-    // The 'provided' configuration is for optional dependencies that exist at compile-time but might not at runtime.
-    // provided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-
-    // These dependencies get remapped to your current MCP mappings
-    // deobf 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-
-    // For more info...
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
 }
 
-// Example for how to get properties into the manifest for reading by the runtime...
 jar {
     manifest {
         attributes([
@@ -168,13 +133,8 @@ jar {
     }
 }
 
-// Example configuration to allow publishing using the maven-publish task
-// This is the preferred method to reobfuscate your jar file
 jar.finalizedBy('shadowJar')
 jar.finalizedBy('reobfJar')
-// However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
-//publish.dependsOn('reobfJar')
-
 
 // BY DYAMO BOLSHOY UMNI MALCHEG
 import org.apache.tools.ant.filters.ReplaceTokens

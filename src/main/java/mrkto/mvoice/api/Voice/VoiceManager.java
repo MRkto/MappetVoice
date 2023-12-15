@@ -8,7 +8,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import java.util.LinkedList;
 
 public class VoiceManager {
-    private LinkedList<Group> groups = new LinkedList<>();
+    private final LinkedList<Group> groups = new LinkedList<>();
 
     public LinkedList<Group> getGroups(){
         return this.groups;
@@ -22,14 +22,14 @@ public class VoiceManager {
         return new nullGroup();
     }
     public boolean createGroup(String name){
-        if(getGroup(name).getName() == new nullGroup().getName() && name != "") {
+        if(getGroup(name).getName().equals(new nullGroup().getName()) && !name.equals("")) {
             groups.add(new Group(name));
             return true;
         }
         return false;
     }
     public boolean createGroupWithCustomData(String name, NBTTagCompound data){
-        if(getGroup(name).getName() == new nullGroup().getName() && name != "") {
+        if(getGroup(name).getName().equals(new nullGroup().getName()) && !name.equals("")) {
             groups.add(new Group(name, data));
             return true;
         }
@@ -37,8 +37,8 @@ public class VoiceManager {
     }
     public boolean deleteGroup(String name){
         for(Group group : groups){
-            if(group.getName() == name){
-                groups.remove(groups.indexOf(group));
+            if(group.getName().equals(name)){
+                groups.remove(group);
                 return true;
             }
         }

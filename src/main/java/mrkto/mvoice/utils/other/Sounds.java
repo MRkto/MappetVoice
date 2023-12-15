@@ -32,6 +32,7 @@ public class Sounds {
         if(noise == null){
             try {
                 InputStream stream = Minecraft.getMinecraft().getResourceManager().getResource(RLUtils.create("mvoice:sounds/noise.wav")).getInputStream();
+                Minecraft.getMinecraft().getResourceManager().getResource(RLUtils.create("mvoice:sounds/noise.wav"));
                 noise = new InfinityByteArrayInputStream(stream);
             }catch (IOException e){e.printStackTrace();}
         }

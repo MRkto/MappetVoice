@@ -1,61 +1,34 @@
 package mrkto.mvoice.utils;
 
 import mrkto.mvoice.api.Events.OnPlayerSpeaking;
-import mrkto.mvoice.api.Voice.data.PlayersData;
-import mrkto.mvoice.audio.speaker.speakerWriter;
-import mrkto.mvoice.network.client.MutePacketC;
-import mrkto.mvoice.network.client.SoundPacketClientC;
-import mrkto.mvoice.network.common.*;
-import mrkto.mvoice.network.server.EventPacketServerS;
+import mrkto.mvoice.capability.Profile;
+import mrkto.mvoice.client.AudioUtils;
 import mrkto.mvoice.MappetVoice;
-import mrkto.mvoice.network.server.RadioChangePacketS;
-import mrkto.mvoice.network.server.SoundPacketServerS;
-import io.netty.buffer.ByteBuf;
-import mrkto.mvoice.utils.other.Sounds;
-import net.minecraft.client.entity.EntityPlayerSP;
+import mrkto.mvoice.network.Dispatcher;
+import mrkto.mvoice.proxy.ServerProxy;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class PacketUtils {
-    public static void register(){
-        int id = 0;
-        MappetVoice.NETWORK.registerMessage(EventPacketServerS.class, EventPacket.class, id++, Side.SERVER);
-        MappetVoice.NETWORK.registerMessage(SoundPacketServerS.class, SoundPacket.class, id++, Side.SERVER);
-        MappetVoice.NETWORK.registerMessage(SoundPacketClientC.class, SoundPacketPlayer.class, id++, Side.CLIENT);
-        MappetVoice.NETWORK.registerMessage(RadioChangePacketS.class, RadioPacket.class, id++, Side.SERVER);
-        MappetVoice.NETWORK.registerMessage(MutePacketC.class, MutePacket.class, id++, Side.CLIENT);
-    }
-    public static void sendSoundToServer(byte[] data, boolean isRadio){
-        MappetVoice.NETWORK.sendToServer(new SoundPacket(data, isRadio));
-    }
-    public static void sendSoundToClient(byte[] data, BlockPos DataPos,  EntityPlayerMP player, String name, double distance){
-        MappetVoice.NETWORK.sendTo(new SoundPacketPlayer(data, DataPos, name, distance), player);
-    }
-
-    public static void sendRadioSoundToClient(byte[] data, BlockPos DataPos,  EntityPlayerMP player, String name, double distance, float balance){
-        MappetVoice.NETWORK.sendTo(new SoundPacketPlayer(data, DataPos, name, distance, balance), player);
-    }
-    public static void serverSoundProcessor(byte[] data, EntityPlayerMP player, boolean isRadio){
-        if(PlayersData.get().getPlayerData(player).isMuted()){
-            MappetVoice.NETWORK.sendTo(new MutePacket(false, false, 1), player);
+    public static void serverSoundProcessor(byte[] data, EntityPlayerMP player, boolean isRadio, float volume){
+        if(Profile.get(player).getMuted()){
             return;
         }
         BlockPos position = player.getPosition();
         String name = player.getName();
         List<EntityPlayerMP> playerList = player.getServer().getPlayerList().getPlayers();
+        ArrayList<String> MutedList = Profile.get(player).getMutedList();
         if(isRadio){
             String wave = PlayerUtils.getWave(player);
             for (EntityPlayerMP Listedplayer : playerList) {
-                if (!Listedplayer.equals(player) && !PlayersData.get().getPlayerData(player).getLocalMutedList().contains(Listedplayer.getName()) && Objects.equals(PlayerUtils.getWave(Listedplayer), wave)) {
+                if (!Listedplayer.equals(player) && !MutedList.contains(Listedplayer.getName()) && Objects.equals(PlayerUtils.getWave(Listedplayer), wave)) {
                     float balance = MappetVoice.minNoise.get();
-                    sendRadioSoundToClient(data, Listedplayer.getPosition(), Listedplayer, player.getName(), 999, balance);
+                    Dispatcher.sendSoundTo(data, Listedplayer.getPosition(), Listedplayer, player.getName(), 999, balance);
                 }
             }
             if(!MappetVoice.hearOther.get()){
@@ -63,13 +36,13 @@ public class PacketUtils {
             }
         }
         for (EntityPlayerMP Listedplayer : playerList) {
-            if (player.getDistance(Listedplayer) < MappetVoice.range.get() && !Listedplayer.equals(player) && !PlayersData.get().getPlayerData(player).getLocalMutedList().contains(Listedplayer.getName()) && !MappetVoice.voice.getGroup(MappetVoice.voice.PlayerGroup(player)).hasPlayer(Listedplayer)) {
-                sendSoundToClient(data, position, Listedplayer, name, MappetVoice.range.get());
+            if (player.getDistance(Listedplayer) < MappetVoice.range.get() && !Listedplayer.equals(player) && !MutedList.contains(Listedplayer.getName()) && !MappetVoice.voice.getGroup(MappetVoice.voice.PlayerGroup(player)).hasPlayer(Listedplayer)) {
+                Dispatcher.sendSoundTo(data, position, Listedplayer, name, MappetVoice.range.get());
             }
         }
 
         sendToGroup(data, player);
-        Event(data, player, isRadio);
+        Event(data, player, isRadio, volume);
     }
     private static void sendToGroup(byte[] data, EntityPlayerMP player){
         if(!MappetVoice.voice.PlayerInGroup(player)){
@@ -77,42 +50,17 @@ public class PacketUtils {
         }
         List<EntityPlayerMP> playerList = player.getServer().getPlayerList().getPlayers();
         for (EntityPlayerMP Listedplayer : playerList) {
-            if (!Listedplayer.equals(player) && PlayersData.get().getPlayerData(player).getLocalMutedList().contains(Listedplayer.getName()) && !MappetVoice.voice.getGroup(MappetVoice.voice.PlayerGroup(player)).hasPlayer(Listedplayer)) {
+            if (!Listedplayer.equals(player) && Profile.get(player).getMutedList().contains(Listedplayer.getName()) && !MappetVoice.voice.getGroup(MappetVoice.voice.PlayerGroup(player)).hasPlayer(Listedplayer)) {
                 BlockPos position = Listedplayer.getPosition();
-                sendSoundToClient(data, position, Listedplayer, player.getName(), 999);
+                Dispatcher.sendSoundTo(data, position, Listedplayer, player.getName(), 999);
             }
         }
     }
-    private static void Event(byte[] bytes, EntityPlayerMP player, boolean isRadio){
-            final byte[] finalBytes = AudioUtils.decode(bytes);
-            float volume = AudioUtils.calcVolume(finalBytes);
+    private static void Event(byte[] bytes, EntityPlayerMP player, boolean isRadio, float volumeClient){
 
-            MinecraftForge.EVENT_BUS.post(new OnPlayerSpeaking(player, isRadio, volume, finalBytes));
-    }
-    public static void clientSoundSender(byte[] data, boolean isRadio){
-        byte[] encodedData = AudioUtils.encode(data);
-        sendSoundToServer(encodedData, isRadio);
-    }
-    @SideOnly(Side.CLIENT)
-    public static void clientSoundProcessor(byte[] data, BlockPos position, double distance, String name, float balance){
-        byte[] decodedData = AudioUtils.decode(data);
-        if(balance != 0f){
-            byte[] arr = Sounds.getNoise().createArray(0, decodedData.length);
-            decodedData = AudioUtils.mergeSounds(decodedData, arr, 0.8f);
-        }
-        EntityPlayerSP player = Minecraft.getMinecraft().player;
-        speakerWriter.PlaySound(decodedData, position.getX(), position.getY(), position.getZ(), player.posX, player.posY, player.posZ, player.rotationPitch, player.rotationYaw, distance, name);
-    }
-    public static void writeString(ByteBuf buf, String string) {
-        byte[] bytes = string.getBytes();
-        buf.writeInt(bytes.length);
-        buf.writeBytes(bytes);
-    }
+            final byte[] data = ServerProxy.isLoaded() ? ServerProxy.decode(bytes) : new byte[1920];
+            float volume = ServerProxy.isLoaded() ? AudioUtils.calcVolume(data) : volumeClient;
 
-    public static String readString(ByteBuf buf) {
-        int length = buf.readInt();
-        byte[] bytes = new byte[length];
-        buf.readBytes(bytes);
-        return new String(bytes);
+            MinecraftForge.EVENT_BUS.post(new OnPlayerSpeaking(player, isRadio, volume, data));
     }
 }

@@ -2,8 +2,8 @@ package mrkto.mvoice.client.gui;
 
 import mchorse.mclib.client.gui.framework.GuiBase;
 import mchorse.mclib.client.gui.framework.elements.input.GuiTextElement;
-import mrkto.mvoice.MappetVoice;
-import mrkto.mvoice.network.common.RadioPacket;
+import mrkto.mvoice.network.Dispatcher;
+import mrkto.mvoice.network.packets.RadioPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
@@ -41,7 +41,7 @@ public class GuiRadioSettings extends GuiBase {
 
     @Override
     protected void closeScreen() {
-        MappetVoice.NETWORK.sendToServer(new RadioPacket(this.value));
+        Dispatcher.sendToServer(new RadioPacket(this.value));
         super.closeScreen();
 
     }
