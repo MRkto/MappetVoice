@@ -6,6 +6,7 @@ import mrkto.mvoice.api.Voice.VoiceManager;
 import mrkto.mvoice.capability.IProfile;
 import mrkto.mvoice.capability.Profile;
 import mrkto.mvoice.capability.ProfileStorage;
+import mrkto.mvoice.client.audio.speaker.SpeakerListener;
 import mrkto.mvoice.utils.other.mclib.ValueVoiceButtons;
 import mrkto.mvoice.client.audio.interfaces.IAudioSystemManager;
 import mrkto.mvoice.items.RadioItem;
@@ -45,6 +46,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.lang.reflect.Proxy;
+
 @Mod.EventBusSubscriber
 @Mod(
         modid = MappetVoice.MOD_ID,
@@ -55,7 +58,7 @@ public class MappetVoice {
 
     public static final String MOD_ID = "mvoice";
     public static final String NAME = "MappetVoice";
-    public static final String VERSION = "0.0.1";
+    public static final String VERSION = "0.0.12";
     @SidedProxy(serverSide = "mrkto.mvoice.proxy.ServerProxy", clientSide = "mrkto.mvoice.proxy.ClientProxy")
     public static ServerProxy proxy;
     @Mod.Instance(MOD_ID)
@@ -91,12 +94,10 @@ public class MappetVoice {
 
     @SubscribeEvent
     public void onConfigRegister(RegisterConfigEvent event) {
-        range = event.opAccess.category("Voice settings").getInt("hearrange", 25, 1, 200);
-        range.syncable();
-        opus = event.opAccess.category("Voice settings").getBoolean("calcSoundOnServer", false);
+
         ConfigBuilder builder = event.createBuilder(MOD_ID);
 
-        builder.category("general").register(new ValueVoiceButtons("buttons").clientSide()).getCategory();
+        builder.category("client").register(new ValueVoiceButtons("buttons").clientSide()).getCategory();
         push = builder.getBoolean("push", true);
         push.clientSide();
         volumes = builder.getInt("volumes", 100, 0, 200);
@@ -109,6 +110,10 @@ public class MappetVoice {
         voiceaction.clientSide();
         numofaction = builder.getFloat("numofaction", 0.3f, 0.0f, 1.0f);
         numofaction.clientSide();
+        builder.category("general");
+        range = builder.getInt("hearrange", 25, 1, 200);
+        range.syncable();
+        opus = builder.category("Voicesettings").getBoolean("calcSoundOnServer", false);
         builder.category("radios");
         onRadioSound = builder.getBoolean("onRadioSound", true);
         onRadioSound.syncable();
@@ -183,6 +188,7 @@ public class MappetVoice {
     @EventHandler
     public void disableMod(FMLModDisabledEvent event){
         AudioManager.fullTerminate();
+        SpeakerListener.instance.close();
         logger.info("bye");
     }
     @SubscribeEvent

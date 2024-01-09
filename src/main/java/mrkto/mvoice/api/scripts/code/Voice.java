@@ -33,10 +33,10 @@ public class Voice implements IVoice {
         return MappetVoice.voice.deleteGroup(name);
     };
     public boolean PlayerInGroup(ScriptPlayer player){
-        return MappetVoice.voice.PlayerInGroup(player.getMinecraftPlayer());
+        return MappetVoice.voice.playerInGroup(player.getMinecraftPlayer());
     };
     public String PlayerGroup(ScriptPlayer player){
-        return MappetVoice.voice.PlayerGroup(player.getMinecraftPlayer());
+        return MappetVoice.voice.playerGroup(player.getMinecraftPlayer());
     };
 
 

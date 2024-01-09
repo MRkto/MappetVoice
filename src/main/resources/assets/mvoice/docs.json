@@ -76,7 +76,7 @@
         },
 
         {
-          "name": "PlayerInGroup",
+          "name": "playerInGroup",
           "doc": "checks whether the player is in any group\n\n\n <pre>{@code \n function main(c)\n{\n    var s = c.getSubject()\n    var voice = mappet.getVoice()\n    \n    voice.PlayerInGroup(s)\n } \n }</pre>\n",
           "returns": {
             "type": "boolean"
@@ -90,7 +90,7 @@
           "annotations": []
         },
         {
-          "name": "PlayerGroup",
+          "name": "playerGroup",
           "doc": "return player group\n\n\n <pre>{@code \n function main(c)\n{\n    var s = c.getSubject()\n    var voice = mappet.getVoice()\n    \n    voice.PlayerGroup(s)\n } \n }</pre>\n",
           "returns": {
             "type": "java.lang.String"
@@ -377,7 +377,7 @@
           "annotations": []
         },
         {
-          "name": "Mute",
+          "name": "mute",
           "doc": "mute the player\n\n\n <pre>{@code \n function main(c)\n{\n    var s = c.getSubject()\n    \n    s.Mute()\n    \n } \n }</pre>\n",
           "returns": {
             "type": "void"
@@ -387,7 +387,7 @@
           "annotations": []
         },
         {
-          "name": "Unmute",
+          "name": "unmute",
           "doc": "unmute the player\n\n\n <pre>{@code \n function main(c)\n{\n    var s = c.getSubject()\n    \n    s.Unmute()\n    \n } \n }</pre>\n",
           "returns": {
             "type": "void"
@@ -431,7 +431,7 @@
           "annotations": []
         },
         {
-          "name": "LocalMute",
+          "name": "localMute",
           "doc": "unmute the player in groups\n\n\n <pre>{@code \n function main(c)\n{\n    var s = c.getSubject()\n    \n    c.send(s.LocalMute())\n    \n } \n }</pre>\n",
           "returns": {
             "type": "void"
@@ -445,7 +445,7 @@
           "annotations": []
         },
         {
-          "name": "LocalUnmute",
+          "name": "localUnmute",
           "doc": "unmute the player in groups\n\n\n <pre>{@code \n function main(c)\n{\n    var s = c.getSubject()\n    \n    c.send(s.LocalUnmute())\n    \n } \n }</pre>\n",
           "returns": {
             "type": "void"

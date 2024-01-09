@@ -44,7 +44,7 @@ public class VoiceManager {
         }
         return false;
     }
-    public boolean PlayerInGroup(EntityPlayerMP player){
+    public boolean playerInGroup(EntityPlayerMP player){
         for(Group group : getGroups()){
             if(group.hasPlayer(player)){
                 return true;
@@ -52,7 +52,7 @@ public class VoiceManager {
         }
         return false;
     }
-    public String PlayerGroup(EntityPlayerMP player){
+    public String playerGroup(EntityPlayerMP player){
         for(Group group : getGroups()){
             if(group.hasPlayer(player)){
                 return group.getName();
