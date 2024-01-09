@@ -16,6 +16,15 @@ import java.util.Objects;
 
 public class PacketUtils {
     public static void serverSoundProcessor(byte[] data, EntityPlayerMP player, boolean isRadio, float volume){
+        if(data == null){
+            List<EntityPlayerMP> playerList = player.getServer().getPlayerList().getPlayers();
+            for (EntityPlayerMP Listedplayer : playerList) {
+                if (player.getDistance(Listedplayer) < MappetVoice.range.get()) {
+                    Dispatcher.sendSoundTo(null, null, null, player.getName(), 0, 0);
+                }
+            }
+
+        }
         if(Profile.get(player).getMuted()){
             return;
         }
@@ -36,7 +45,7 @@ public class PacketUtils {
             }
         }
         for (EntityPlayerMP Listedplayer : playerList) {
-            if (player.getDistance(Listedplayer) < MappetVoice.range.get() && !Listedplayer.equals(player) && !MutedList.contains(Listedplayer.getName()) && !MappetVoice.voice.getGroup(MappetVoice.voice.PlayerGroup(player)).hasPlayer(Listedplayer)) {
+            if (player.getDistance(Listedplayer) < MappetVoice.range.get() && !Listedplayer.equals(player) && !MutedList.contains(Listedplayer.getName()) && !MappetVoice.voice.getGroup(MappetVoice.voice.playerGroup(player)).hasPlayer(Listedplayer)) {
                 Dispatcher.sendSoundTo(data, position, Listedplayer, name, MappetVoice.range.get());
             }
         }
@@ -45,12 +54,12 @@ public class PacketUtils {
         Event(data, player, isRadio, volume);
     }
     private static void sendToGroup(byte[] data, EntityPlayerMP player){
-        if(!MappetVoice.voice.PlayerInGroup(player)){
+        if(!MappetVoice.voice.playerInGroup(player)){
             return;
         }
         List<EntityPlayerMP> playerList = player.getServer().getPlayerList().getPlayers();
         for (EntityPlayerMP Listedplayer : playerList) {
-            if (!Listedplayer.equals(player) && Profile.get(player).getMutedList().contains(Listedplayer.getName()) && !MappetVoice.voice.getGroup(MappetVoice.voice.PlayerGroup(player)).hasPlayer(Listedplayer)) {
+            if (!Listedplayer.equals(player) && Profile.get(player).getMutedList().contains(Listedplayer.getName()) && !MappetVoice.voice.getGroup(MappetVoice.voice.playerGroup(player)).hasPlayer(Listedplayer)) {
                 BlockPos position = Listedplayer.getPosition();
                 Dispatcher.sendSoundTo(data, position, Listedplayer, player.getName(), 999);
             }

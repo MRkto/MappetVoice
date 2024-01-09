@@ -9,7 +9,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public interface IAudioSystemManager {
     IAudioInput getInput();
     IAudioOutput getOutput();
-    void processSound(byte[] data, BlockPos position, double posX, double posY, double posZ, float rotationPitch, float rotationYaw, double distance, String name, float balance);
+    void processSound(byte[] data, BlockPos position, double posX, double posY, double posZ, float rotationPitch, float rotationYaw, double distance, String name);
     //используется для подгрузки библиотек и прочего
     boolean preInitiate();
     //используется для подгрузки неообходимого для полноценной работы запускается при заходе в мир

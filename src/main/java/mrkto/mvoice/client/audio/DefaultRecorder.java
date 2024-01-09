@@ -6,6 +6,7 @@ import mrkto.mvoice.MappetVoice;
 import mrkto.mvoice.client.AudioUtils;
 
 import javax.sound.sampled.*;
+import java.util.ArrayList;
 
 public class DefaultRecorder implements IAudioInput {
     public final DataLine.Info MICRO_INFO = new DataLine.Info(TargetDataLine.class, AudioUtils.FORMATM);
@@ -40,7 +41,7 @@ public class DefaultRecorder implements IAudioInput {
                     byte[] data = new byte[1920];
                     microphone.start();
 
-                    while (isRecording && isAvalible()) {
+                    while (isRecording && isAvailable()) {
                         microphone.read(data, 0, data.length);
                         byte[] dataVolumed = AudioUtils.adjustVolume(data, (double) MappetVoice.volumem.get() / 100);
                         Dispatcher.sendSoundToServer(dataVolumed, this.isRadio);
@@ -85,10 +86,13 @@ public class DefaultRecorder implements IAudioInput {
         }
         return null;
     }
-    public DataLine.Info getFormat(){
-        return MICRO_INFO;
+
+    @Override
+    public ArrayList<String> getAudioDevices() {
+        return AudioUtils.findAudioDevices(MICRO_INFO);
     }
-    public boolean isAvalible(){
+
+    public boolean isAvailable(){
         return microphone.isOpen();
     }
     public boolean isRecording(){return isRecording;}

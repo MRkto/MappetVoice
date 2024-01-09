@@ -5,6 +5,7 @@ import mchorse.mclib.network.ClientMessageHandler;
 import mrkto.mvoice.MappetVoice;
 import mrkto.mvoice.client.AudioUtils;
 
+import mrkto.mvoice.client.audio.speaker.SpeakerListener;
 import mrkto.mvoice.utils.PacketUtils;
 import mrkto.mvoice.utils.other.Sounds;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -13,6 +14,10 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class SoundPacketClient implements IMessage {
     private byte[] sound;
@@ -31,6 +36,8 @@ public class SoundPacketClient implements IMessage {
     }
     @Override
     public void fromBytes(ByteBuf buf) {
+        if(buf.readBoolean())
+            return;
         int length = buf.readInt();
         sound = new byte[length];
         for (int i = 0; i < length; i++) {
@@ -47,6 +54,7 @@ public class SoundPacketClient implements IMessage {
 
     @Override
     public void toBytes(ByteBuf buf) {
+        buf.writeBoolean(sound == null);
         buf.writeInt(sound.length);
         for (byte b : sound) {
             buf.writeByte(b);
@@ -62,13 +70,10 @@ public class SoundPacketClient implements IMessage {
         @SideOnly(Side.CLIENT)
         @Override
         public void run(EntityPlayerSP entityPlayerSP, SoundPacketClient packet) {
-            byte[] decodedData = AudioUtils.decode(packet.sound);
             if(packet.balance != 0f){
                 packet.name += "radio";
-                byte[] arr = Sounds.getNoise().createArray(0, decodedData.length);
-                decodedData = AudioUtils.mergeSounds(decodedData, arr, 0.8f);
             }
-            MappetVoice.AudioManager.processSound(decodedData, packet.pos, entityPlayerSP.posX, entityPlayerSP.posY, entityPlayerSP.posZ, entityPlayerSP.rotationPitch, entityPlayerSP.rotationYawHead, packet.distance, packet.name, packet.balance);
+            SpeakerListener.instance.accept(packet.name, packet.sound, packet.pos, packet.distance, packet.balance);
         }
     }
 }

@@ -34,8 +34,8 @@ public class GuiVoiceChange extends GuiBase {
             lelement.flex().relative(this.viewport).xy(0.25F, 0.5F).w(0.3F).anchor(0.5F, 0.5F).column(5).vertical().stretch();
             relement.flex().relative(this.viewport).xy(0.75F, 0.5F).w(0.3F).anchor(0.5F, 0.5F).column(5).vertical().stretch();
 
-            ArrayList<String> mlist = AudioUtils.findAudioDevices(MappetVoice.AudioManager.getInput().getFormat());
-            ArrayList<String> slist = AudioUtils.findAudioDevices(MappetVoice.AudioManager.getOutput().getFromat());
+            ArrayList<String> mlist = MappetVoice.AudioManager.getInput().getAudioDevices();
+            ArrayList<String> slist = MappetVoice.AudioManager.getOutput().getAudioDevices();
 
             this.Speakerlist = new GuiStringListElement(mc, this::GuiSpeakerList);
             this.Speakerlist.background().setList(slist);

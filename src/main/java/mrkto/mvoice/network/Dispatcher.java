@@ -52,6 +52,10 @@ public class Dispatcher{
         byte[] encodedData = AudioUtils.encode(data);
         VOICE_DISPATCHER.sendToServer(new SoundPacket(encodedData, isRadio, volume));
     }
+    public static void sendEndToServer() {
+
+        VOICE_DISPATCHER.sendToServer(new SoundPacket());
+    }
     public static void postEventOnServer(String event, boolean isRadio) {
         DISPATCHER.sendToServer(new EventPacket(event, isRadio));
     }

@@ -40,7 +40,7 @@ public class DefaultSpeaker implements IAudioOutput {
             }
             SourceDataLine DataLine = chanels.get(chanel);
             byte[] stereoData = AudioUtils.monoToStereo(data, leftVolume  * ((float) MappetVoice.volumes.get() / 100)  * (ClientData.getInstance().getVolume(chanel) / 100), rightVolume * ((float) MappetVoice.volumes.get() / 100) * (ClientData.getInstance().getVolume(chanel) / 100));
-            DataLine.open(format);
+            DataLine.open(format, 1920 * 2 * 4);
             DataLine.start();
             DataLine.write(stereoData, 0, stereoData.length);
         } catch (LineUnavailableException e) {
@@ -89,10 +89,14 @@ public class DefaultSpeaker implements IAudioOutput {
         }
 
     }
-    public DataLine.Info getFromat(){
-        return SPEAKER_INFO;
+
+    @Override
+    public ArrayList<String> getAudioDevices() {
+        return AudioUtils.findAudioDevices(SPEAKER_INFO);
     }
-    public void stopAllSound() {
+
+    @Override
+    public void stopAllSounds() {
         for (Map.Entry<String, SourceDataLine> entry : chanels.entrySet()) {
             entry.getValue().flush();
             entry.getValue().stop();
@@ -161,6 +165,11 @@ public class DefaultSpeaker implements IAudioOutput {
 
     }
 
+    @Override
+    public boolean isAvailable(String chanel) {
+        return true;
+    }
+
     public void setMixer(String name) {
         if (mixer != null && mixer.getMixerInfo().getName() == name) {
             return;
@@ -169,7 +178,7 @@ public class DefaultSpeaker implements IAudioOutput {
             mixer.close();
         }
         mixer = AudioUtils.findMixer(name, SPEAKER_INFO);
-        stopAllSound();
+        stopAllSounds();
     }
 
     public String getMixer(){

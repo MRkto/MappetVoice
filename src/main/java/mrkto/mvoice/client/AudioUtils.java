@@ -50,10 +50,10 @@ public class AudioUtils {
         }
         return list;
     }
-    public static byte[] decode(byte[] data){
+    public static  byte[] decode(byte[] data){
         return codec.decodeFrame(data);
     }
-    public static byte[] encode(byte[] data){
+    public static  byte[] encode(byte[] data){
         return codec.encodeFrame(data);
     }
     public static boolean loadOpus()
@@ -123,6 +123,19 @@ public class AudioUtils {
             stereo[i*2 + 1] = datal[i+1];
             stereo[i*2 + 2] = datar[i];
             stereo[i*2 + 3] = datar[i+1];
+
+        }
+        return stereo;
+    }
+    public static byte[] monoToStereo(byte[] data) {
+        byte[] stereo = new byte[data.length * 2];
+
+        for (int i = 0; i < data.length; i += 2) {
+
+            stereo[i*2] = data[i];
+            stereo[i*2 + 1] = data[i+1];
+            stereo[i*2 + 2] = data[i];
+            stereo[i*2 + 3] = data[i+1];
 
         }
         return stereo;

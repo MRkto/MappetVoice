@@ -4,6 +4,7 @@ import mrkto.mvoice.MappetVoice;
 import mrkto.mvoice.api.Events.OnEngineRegistry;
 import mrkto.mvoice.capability.Profile;
 import mrkto.mvoice.client.audio.AudioEngineLoader;
+import mrkto.mvoice.client.audio.better.CoolAudioSystem;
 import mrkto.mvoice.client.audio.DefaultAudioSystemManager;
 import mrkto.mvoice.network.Dispatcher;
 import mrkto.mvoice.utils.other.UnableInitiateEngineException;
@@ -95,7 +96,8 @@ public class ClientEventHandler {
     }
     @SubscribeEvent
     public void OnEngineRegister(OnEngineRegistry event){
-        event.registry(AudioEngineLoader.defaultEngine, new DefaultAudioSystemManager());
+        event.registry("kostil", new CoolAudioSystem());
+        event.registry("norm", new CoolAudioSystem());
     }
 
 }

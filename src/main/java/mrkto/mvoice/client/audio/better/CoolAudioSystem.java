@@ -1,19 +1,17 @@
-package mrkto.mvoice.client.audio;
+package mrkto.mvoice.client.audio.better;
 
-import mrkto.mvoice.client.AudioUtils;
+import mrkto.mvoice.client.audio.DefaultRecorder;
 import mrkto.mvoice.client.audio.interfaces.IAudioInput;
 import mrkto.mvoice.client.audio.interfaces.IAudioOutput;
 import mrkto.mvoice.client.audio.interfaces.IAudioSystemManager;
-import mrkto.mvoice.utils.other.Sounds;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.util.math.BlockPos;
-public class DefaultAudioSystemManager implements IAudioSystemManager {
+public class CoolAudioSystem implements IAudioSystemManager {
     protected DefaultRecorder input;
-    protected DefaultSpeaker output;
-    public DefaultAudioSystemManager(){
+
+    protected CoolSpeaker output;
+    public CoolAudioSystem(){
         this.input = new DefaultRecorder();
-        this.output = new DefaultSpeaker();
+        this.output = new CoolSpeaker();
     }
 
     @Override
@@ -38,30 +36,24 @@ public class DefaultAudioSystemManager implements IAudioSystemManager {
 
     @Override
     public boolean initiate() {
-        try{
-            output.createDefault();
-        }catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
         return true;
     }
 
     @Override
     public void terminate() {
-        output.deleteAllChanels();
         input.stopRecording();
+        output.stopAllSounds();
     }
 
     @Override
     public void fullTerminate() {
         input = null;
-        output = null;
+
     }
 
     @Override
     public IAudioSystemManager getNewInstance() {
-        return new DefaultAudioSystemManager();
+        return new CoolAudioSystem();
     }
 
 

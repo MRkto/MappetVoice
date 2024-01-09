@@ -10,8 +10,10 @@ public class SoundPacket implements IMessage {
     byte[] sound;
     boolean isRadio;
     float volume;
+    boolean end;
 
     public SoundPacket() {
+        end = true;
     }
 
     public SoundPacket(byte[] sound, boolean isRadio, float volume) {
@@ -21,6 +23,8 @@ public class SoundPacket implements IMessage {
     }
     @Override
     public void fromBytes(ByteBuf buf) {
+        if(buf.readBoolean())
+            return;
         int length = buf.readInt();
         sound = new byte[length];
         for (int i = 0; i < length; i++) {
@@ -32,6 +36,9 @@ public class SoundPacket implements IMessage {
 
     @Override
     public void toBytes(ByteBuf buf) {
+        buf.writeBoolean(end);
+        if(end)
+            return;
         buf.writeInt(sound.length);
         for (byte b : sound) {
             buf.writeByte(b);
