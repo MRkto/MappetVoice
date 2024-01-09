@@ -67,6 +67,7 @@ public class ClientData {
             .setPrettyPrinting()
             .create();
     public static Path getConfigFilePath(String fileName) {
+        MappetVoice.config.toPath().resolve("mvoice").toFile().mkdir();
         return MappetVoice.config.toPath().resolve("mvoice").resolve(fileName);
     }
 
