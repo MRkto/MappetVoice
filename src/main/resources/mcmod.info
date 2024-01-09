@@ -1,0 +1,21 @@
+[{
+  "modid": "mvoice",
+  "name": "Mappet Voice",
+  "description": "This addon adds voice chat and methods to manage it for the Mappet",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "https://github.com/MRkto/MappetVoice",
+  "authorList": [
+    "MRkto - MRkoteich"
+  ],
+  "credits": "Special thanks to McHorse for mods and Erfam, TorayLife for helping and supporting!",
+  "logoFile": "",
+  "useDependencyInformation": true,
+  "requiredMods": [
+    "mappet",
+    "mixinbooter"
+  ],
+  "dependencies": [
+    "mappet"
+  ]
+}]
